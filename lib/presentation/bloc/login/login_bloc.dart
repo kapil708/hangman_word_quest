@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../core/error/failures.dart';
 import '../../../../data/data_sources/local_data_source.dart';
-import '../../../domain/usecases/login_usercase.dart';
+import '../../../domain/use_cases/login_user_case.dart';
 
 part 'login_event.dart';
 part 'login_state.dart';

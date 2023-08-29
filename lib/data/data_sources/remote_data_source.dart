@@ -2,15 +2,21 @@ import 'dart:convert';
 
 import 'package:http/http.dart' as http;
 
+import '../../core/const/category_list.dart';
+import '../../core/const/word_list.dart';
 import '../../core/error/exceptions.dart';
+import '../models/category/category_model.dart';
 import '../models/login/login_model.dart';
+import '../models/word/word_model.dart';
 import 'api_methods.dart';
+
+Map<String, String>? get _headers => {'Accept': 'application/json', 'Content-Type': 'application/json'};
 
 abstract class RemoteDataSource {
   Future<LoginModel> login(Map<String, dynamic> body);
+  Future<List<CategoryModel>> getCategoryList();
+  Future<List<WordModel>> getWordListByType(String categoryId);
 }
-
-Map<String, String>? get _headers => {'Accept': 'application/json', 'Content-Type': 'application/json'};
 
 class RemoteDataSourceImpl implements RemoteDataSource {
   final http.Client client;
@@ -31,6 +37,17 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     } else {
       return Future.error(handleErrorResponse(response));
     }
+  }
+
+  @override
+  Future<List<CategoryModel>> getCategoryList() async {
+    return categoryList.map((category) => CategoryModel.fromJson(category)).toList();
+  }
+
+  @override
+  Future<List<WordModel>> getWordListByType(String categoryId) async {
+    List selectedWordList = wordList.where((word) => word['category_id'] == categoryId).toList();
+    return selectedWordList.map((category) => WordModel.fromJson(category)).toList();
   }
 }
 

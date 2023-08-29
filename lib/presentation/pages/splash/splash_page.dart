@@ -27,8 +27,14 @@ class _SplashPageState extends State<SplashPage> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              "Welcome To \nBloc Clean Architecture",
+              "Hangman Word Quest",
+              //"Hangman Word Quest",
               style: Theme.of(context).textTheme.headlineLarge,
+              textAlign: TextAlign.center,
+            ),
+            Text(
+              "Embark on a Word Quest and Defeat the Gallows!",
+              style: Theme.of(context).textTheme.labelLarge,
               textAlign: TextAlign.center,
             ),
           ],
