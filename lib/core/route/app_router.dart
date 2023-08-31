@@ -33,6 +33,11 @@ class AppRouter {
         builder: (context, state) => const HomePage(),
         routes: [
           GoRoute(
+            path: 'gamePlay',
+            name: RouteName.gamePlay,
+            builder: (context, state) => const GamePlayPage(),
+          ),
+          GoRoute(
             path: 'settings',
             name: RouteName.settings,
             builder: (context, state) => const SettingsPage(),
