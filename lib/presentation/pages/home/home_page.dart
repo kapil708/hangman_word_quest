@@ -128,10 +128,10 @@ class HomeView extends StatelessWidget {
                             );
                           },
                         )
-                      : state is CategoryLoading
-                          ? const CircularProgressIndicator()
-                          : state is CategoryFailed
-                              ? Text(state.message)
+                      : state is CategoryFailed
+                          ? Text(state.message)
+                          : state is CategoryLoading
+                              ? const CircularProgressIndicator()
                               : const Text("Category init");
                 },
               ),

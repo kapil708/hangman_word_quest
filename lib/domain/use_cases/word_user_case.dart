@@ -14,6 +14,10 @@ class WordUseCase {
     return wordRepository.getCategoryList();
   }
 
+  Future<Either<Failure, WordEntity>> getWordByType(String categoryId) async {
+    return wordRepository.getWordByType(categoryId);
+  }
+
   Future<Either<Failure, List<WordEntity>>> getWordListByType(String categoryId) async {
     return wordRepository.getWordListByType(categoryId);
   }

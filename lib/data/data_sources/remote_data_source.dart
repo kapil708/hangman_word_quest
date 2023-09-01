@@ -15,6 +15,7 @@ Map<String, String>? get _headers => {'Accept': 'application/json', 'Content-Typ
 abstract class RemoteDataSource {
   Future<LoginModel> login(Map<String, dynamic> body);
   Future<List<CategoryModel>> getCategoryList();
+  Future<WordModel> getWordByType(String categoryId);
   Future<List<WordModel>> getWordListByType(String categoryId);
 }
 
@@ -42,6 +43,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   @override
   Future<List<CategoryModel>> getCategoryList() async {
     return categoryList.map((category) => CategoryModel.fromJson(category)).toList();
+  }
+
+  @override
+  Future<WordModel> getWordByType(String categoryId) async {
+    List selectedWordList = wordList.where((word) => word['category_id'] == categoryId).toList();
+    return selectedWordList.map((category) => WordModel.fromJson(category)).first;
   }
 
   @override

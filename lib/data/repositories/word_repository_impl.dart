@@ -31,6 +31,22 @@ class WordRepositoryImpl implements WordRepository {
   }
 
   @override
+  Future<Either<Failure, WordEntity>> getWordByType(String categoryId) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final word = await remoteDataSource.getWordByType(categoryId);
+        return Right(word);
+      } on ValidationException catch (e) {
+        return Left(ValidationFailure(errors: e.errors, message: e.message));
+      } on ServerException catch (e) {
+        return Left(ServerFailure(statusCode: e.statusCode, message: e.message));
+      }
+    } else {
+      return Left(NetworkFailure());
+    }
+  }
+
+  @override
   Future<Either<Failure, List<WordEntity>>> getWordListByType(String categoryId) async {
     if (await networkInfo.isConnected) {
       try {
