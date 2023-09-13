@@ -12,4 +12,6 @@ class ImageAssets {
 
 class LottieAssets {
   static const String sad = 'assets/lottie/sad.json';
+  static const String win = 'assets/lottie/win.json';
+  static const String winner = 'assets/lottie/winner.json';
 }

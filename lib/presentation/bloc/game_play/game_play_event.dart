@@ -22,6 +22,11 @@ class OnGamePlayInit extends GamePlayEvent {
   List<Object?> get props => [];
 }
 
+class Retry extends GamePlayEvent {
+  @override
+  List<Object?> get props => [];
+}
+
 class CharacterClick extends GamePlayEvent {
   final String character;
 

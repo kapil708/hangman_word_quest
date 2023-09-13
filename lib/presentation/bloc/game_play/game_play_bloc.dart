@@ -12,47 +12,59 @@ part 'game_play_state.dart';
 class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
   final WordUseCase wordUseCase;
 
-  GamePlayBloc({required this.wordUseCase}) : super(GamePlayState()) {
+  List<String> wrongAlphabets = [];
+  List<String> correctAlphabets = [];
+  int attempt = 0;
+  WordEntity word = const WordEntity(id: '1', categoryId: '1', name: '', hint: '');
+
+  GamePlayBloc({required this.wordUseCase}) : super(STGamePlayInitial()) {
     on<OnGamePlayInit>(onGamePlayInit);
     on<CharacterClick>(onCharacterClick);
+    on<Retry>(onRetry);
   }
 
   onGamePlayInit(OnGamePlayInit event, Emitter<GamePlayState> emit) async {
-    emit(state.copyWith(isLoading: true));
+    emit(STWordLoading());
 
     final response = await wordUseCase.getWordByType('1');
 
     response.fold((failure) {
       String message = _mapFailureToMessage(failure) ?? '';
-      emit(WordFailed(message));
+      emit(STWordFailed(message));
     }, (data) {
-      emit(state.copyWith(word: data));
+      word = data;
+      emit(STWordLoaded(data));
     });
   }
 
   onCharacterClick(CharacterClick event, Emitter<GamePlayState> emit) async {
-    if (word.toLowerCase().contains(character)) {
-      correctAlphabets.add(character);
+    if (word.name.toLowerCase().contains(event.character)) {
+      int matchCount = event.character.allMatches(word.name).length;
+      correctAlphabets.addAll(List.filled(matchCount, event.character));
+
+      if (word.name.length == correctAlphabets.length) {
+        emit(STWinner());
+      } else {
+        emit(STCorrectAlphabets(correctAlphabets));
+      }
     } else {
-      wrongAlphabets.add(character);
+      wrongAlphabets.add(event.character);
       attempt++;
+
+      if (attempt < 6) {
+        emit(STWrongAlphabets(wrongAlphabets, attempt));
+      } else {
+        emit(STAttemptOver());
+      }
     }
-    setState(() {});
+  }
 
-    if (attempt == 6) {
-      showFailedDialog();
-    }
+  onRetry(Retry event, Emitter<GamePlayState> emit) {
+    wrongAlphabets = [];
+    correctAlphabets = [];
+    attempt = 0;
 
-    emit(state.copyWith(isLoading: true));
-
-    final response = await wordUseCase.getWordByType('1');
-
-    response.fold((failure) {
-      String message = _mapFailureToMessage(failure) ?? '';
-      emit(WordFailed(message));
-    }, (data) {
-      emit(state.copyWith(word: data));
-    });
+    emit(STGamePlayReload());
   }
 
   String? _mapFailureToMessage(Failure failure) {

@@ -1,44 +1,66 @@
 part of 'game_play_bloc.dart';
 
 @immutable
-class GamePlayState extends Equatable {
-  GamePlayState({
-    List<String>? wrongAlphabets,
-    List<String>? correctAlphabets,
-    int? attempt,
-    bool? isLoading,
-    WordEntity? word,
-  })  : wrongAlphabets = wrongAlphabets ?? [],
-        correctAlphabets = correctAlphabets ?? [],
-        attempt = attempt ?? 0,
-        isLoading = isLoading ?? false,
-        word = word ?? const WordEntity(id: '1', categoryId: '1', name: 'adsdsad', hint: 'adsdsad');
+abstract class GamePlayState /* extends Equatable*/ {}
 
-  final List<String> wrongAlphabets;
-  final List<String> correctAlphabets;
-  final int attempt;
-  final bool isLoading;
-  final WordEntity word;
-
-  GamePlayState copyWith({List<String>? wrongAlphabets, List<String>? correctAlphabets, int? attempt, WordEntity? word, bool? isLoading}) {
-    return GamePlayState(
-      wrongAlphabets: wrongAlphabets ?? this.wrongAlphabets,
-      correctAlphabets: correctAlphabets ?? this.correctAlphabets,
-      attempt: attempt ?? this.attempt,
-      isLoading: isLoading ?? this.isLoading,
-      word: word ?? this.word,
-    );
-  }
-
-  @override
-  List<Object?> get props => [wrongAlphabets, correctAlphabets, attempt];
+class STGamePlayInitial extends GamePlayState {
+  /*@override
+  List<Object?> get props => [];*/
 }
 
-class WordFailed extends GamePlayState {
+class STGamePlayReload extends GamePlayState {
+  /*@override
+  List<Object?> get props => [];*/
+}
+
+class STCorrectAlphabets extends GamePlayState {
+  final List<String> alphabets;
+
+  STCorrectAlphabets(this.alphabets);
+
+  /*@override
+  List<Object?> get props => [alphabets];*/
+}
+
+class STWrongAlphabets extends GamePlayState {
+  final List<String> alphabets;
+  final int attempt;
+
+  STWrongAlphabets(this.alphabets, this.attempt);
+
+  /*@override
+  List<Object?> get props => [alphabets, attempt];*/
+}
+
+class STAttemptOver extends GamePlayState {
+  /*@override
+  List<Object?> get props => [];*/
+}
+
+class STWinner extends GamePlayState {
+  /*@override
+  List<Object?> get props => [];*/
+}
+
+class STWordLoading extends GamePlayState {
+  /*@override
+  List<Object?> get props => [];*/
+}
+
+class STWordLoaded extends GamePlayState {
+  final WordEntity word;
+
+  STWordLoaded(this.word);
+
+  /*@override
+  List<Object?> get props => [word];*/
+}
+
+class STWordFailed extends GamePlayState {
   final String message;
 
-  WordFailed(this.message);
+  STWordFailed(this.message);
 
-  @override
-  List<Object?> get props => [message];
+  /*@override
+  List<Object?> get props => [message];*/
 }

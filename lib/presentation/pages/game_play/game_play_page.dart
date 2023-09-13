@@ -28,25 +28,6 @@ class GamePlayView extends StatefulWidget {
 }
 
 class _GamePlayViewState extends State<GamePlayView> {
-  static const String word = "Earth";
-  List<String> wrongAlphabets = [];
-  List<String> correctAlphabets = [];
-  int attempt = 0;
-
-  characterClick(String character) {
-    if (word.toLowerCase().contains(character)) {
-      correctAlphabets.add(character);
-    } else {
-      wrongAlphabets.add(character);
-      attempt++;
-    }
-    setState(() {});
-
-    if (attempt == 6) {
-      showFailedDialog();
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     double boxSize = (MediaQuery.sizeOf(context).width - 32) / 7;
@@ -56,11 +37,17 @@ class _GamePlayViewState extends State<GamePlayView> {
       appBar: AppBar(toolbarHeight: 0),
       body: BlocConsumer<GamePlayBloc, GamePlayState>(
         listener: (context, state) {
-          if (state is WordFailed) {
+          if (state is STWordFailed) {
             Navigator.pop(context);
+          } else if (state is STAttemptOver) {
+            showFailedDialog(context);
+          } else if (state is STWinner) {
+            showWinnerDialog(context);
           }
         },
         builder: (context, state) {
+          GamePlayBloc gBloc = context.read<GamePlayBloc>();
+
           return Padding(
             padding: const EdgeInsets.all(16),
             child: Column(
@@ -90,13 +77,13 @@ class _GamePlayViewState extends State<GamePlayView> {
                 // Figure
                 Stack(
                   children: [
-                    figureImage(state.attempt >= 0, ImageAssets.hmHang),
-                    figureImage(state.attempt >= 1, ImageAssets.hmHead),
-                    figureImage(state.attempt >= 2, ImageAssets.hmBody),
-                    figureImage(state.attempt >= 3, ImageAssets.hmRightArm),
-                    figureImage(state.attempt >= 4, ImageAssets.hmLeftArm),
-                    figureImage(state.attempt >= 5, ImageAssets.hmRightLag),
-                    figureImage(state.attempt >= 6, ImageAssets.hmLeftLag),
+                    figureImage(gBloc.attempt >= 0, ImageAssets.hmHang),
+                    figureImage(gBloc.attempt >= 1, ImageAssets.hmHead),
+                    figureImage(gBloc.attempt >= 2, ImageAssets.hmBody),
+                    figureImage(gBloc.attempt >= 3, ImageAssets.hmRightArm),
+                    figureImage(gBloc.attempt >= 4, ImageAssets.hmLeftArm),
+                    figureImage(gBloc.attempt >= 5, ImageAssets.hmRightLag),
+                    figureImage(gBloc.attempt >= 6, ImageAssets.hmLeftLag),
                   ],
                 ),
                 const Spacer(),
@@ -105,14 +92,14 @@ class _GamePlayViewState extends State<GamePlayView> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    ...state.word.name.characters.map((e) {
+                    ...gBloc.word.name.characters.map((e) {
                       return Container(
                         decoration: const BoxDecoration(border: Border(bottom: BorderSide())),
                         margin: const EdgeInsets.only(right: 10),
                         width: wordSize,
                         alignment: Alignment.center,
                         child: Text(
-                          state.correctAlphabets.contains(e.toLowerCase()) ? e.toUpperCase() : '',
+                          gBloc.correctAlphabets.contains(e.toLowerCase()) ? e.toUpperCase() : '',
                           style: Theme.of(context).textTheme.headlineMedium,
                         ),
                       );
@@ -120,6 +107,22 @@ class _GamePlayViewState extends State<GamePlayView> {
                   ],
                 ),
                 const VSpace(32),
+
+                // Hint
+                RichText(
+                  //textAlign: TextAlign.center,
+                  text: TextSpan(
+                    text: "Animal: ",
+                    style: Theme.of(context).textTheme.titleMedium,
+                    children: [
+                      TextSpan(
+                        text: gBloc.word.hint,
+                        style: Theme.of(context).textTheme.bodyLarge,
+                      ),
+                    ],
+                  ),
+                ),
+                const VSpace(8),
 
                 // Alphabets
                 Wrap(
@@ -131,8 +134,9 @@ class _GamePlayViewState extends State<GamePlayView> {
                         children: [
                           InkWell(
                             onTap: () {
-                              if (!state.correctAlphabets.contains(e) && !state.wrongAlphabets.contains(e)) {
-                                characterClick(e.toLowerCase());
+                              if (!gBloc.correctAlphabets.contains(e) && !gBloc.wrongAlphabets.contains(e)) {
+                                //characterClick(e.toLowerCase());
+                                context.read<GamePlayBloc>().add(CharacterClick(e.toLowerCase()));
                               }
                             },
                             child: Container(
@@ -146,7 +150,7 @@ class _GamePlayViewState extends State<GamePlayView> {
                               ),
                             ),
                           ),
-                          if (state.correctAlphabets.contains(e.toLowerCase()))
+                          if (gBloc.correctAlphabets.contains(e.toLowerCase()))
                             Padding(
                               padding: const EdgeInsets.all(2),
                               child: Icon(
@@ -155,7 +159,7 @@ class _GamePlayViewState extends State<GamePlayView> {
                                 size: boxSize - 10,
                               ),
                             ),
-                          if (state.wrongAlphabets.contains(e.toLowerCase()))
+                          if (gBloc.wrongAlphabets.contains(e.toLowerCase()))
                             Padding(
                               padding: const EdgeInsets.all(2),
                               child: Icon(
@@ -178,11 +182,11 @@ class _GamePlayViewState extends State<GamePlayView> {
     );
   }
 
-  void showFailedDialog() {
+  void showFailedDialog(BuildContext context) {
     showDialog<void>(
         context: context,
         barrierDismissible: false,
-        builder: (BuildContext context) {
+        builder: (BuildContext _) {
           return WillPopScope(
             onWillPop: () async => false,
             child: Dialog(
@@ -197,14 +201,42 @@ class _GamePlayViewState extends State<GamePlayView> {
                   const VSpace(16),
                   FilledButton(
                     onPressed: () {
-                      wrongAlphabets = [];
-                      correctAlphabets = [];
-                      attempt = 0;
-
-                      setState(() {});
+                      context.read<GamePlayBloc>().add(Retry());
                       Navigator.pop(context);
                     },
                     child: const Text("Retry"),
+                  ),
+                  const VSpace(16),
+                ],
+              ),
+            ),
+          );
+        });
+  }
+
+  void showWinnerDialog(BuildContext context) {
+    showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext _) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: Dialog(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Lottie.asset(LottieAssets.win, height: 300),
+                  Text(
+                    "You Win",
+                    style: Theme.of(context).textTheme.headlineSmall,
+                  ),
+                  const VSpace(16),
+                  FilledButton(
+                    onPressed: () {
+                      context.read<GamePlayBloc>().add(Retry());
+                      Navigator.pop(context);
+                    },
+                    child: const Text("Next"),
                   ),
                   const VSpace(16),
                 ],
