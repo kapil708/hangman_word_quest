@@ -23,7 +23,7 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
           "password": event.password,
         };
 
-        final response = await loginUseCase.call(formData);
+        final response = await loginUseCase.login(formData);
 
         response.fold(
           (failure) {

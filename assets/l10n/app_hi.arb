@@ -1,10 +1,10 @@
 {
-  "home": "Rumah",
-  "settings": "Pengaturan",
-  "chooseLanguage": "Pilih Bahasa Pilihan",
-  "language": "Bahasa",
-  "theme": "Tema",
-  "welcomeUser": "Selamat datang {name}",
+  "home": "होम",
+  "settings": "सेटिंग्स",
+  "chooseLanguage": "पसंदीदा भाषा चुनें",
+  "language": "भाषा",
+  "theme": "थीम",
+  "welcomeUser": "आपका स्वागत है {name}",
 
   "stringWith1Param": "Here is 1st {name}",
   "stringWith2Param": "Here is 1st {name} and here is 2nd {name1}"

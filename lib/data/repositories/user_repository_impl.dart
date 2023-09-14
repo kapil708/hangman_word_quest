@@ -4,6 +4,7 @@ import '../../core/error/exceptions.dart';
 import '../../core/error/failures.dart';
 import '../../core/network/network_info.dart';
 import '../../domain/entities/login_entity.dart';
+import '../../domain/entities/user_entity.dart';
 import '../../domain/repositories/user_repository.dart';
 import '../data_sources/remote_data_source.dart';
 
@@ -18,6 +19,22 @@ class UserRepositoryImpl implements UserRepository {
     if (await networkInfo.isConnected) {
       try {
         final login = await remoteDataSource.login(body);
+        return Right(login);
+      } on ValidationException catch (e) {
+        return Left(ValidationFailure(errors: e.errors, message: e.message));
+      } on ServerException catch (e) {
+        return Left(ServerFailure(statusCode: e.statusCode, message: e.message));
+      }
+    } else {
+      return Left(NetworkFailure());
+    }
+  }
+
+  @override
+  Future<Either<Failure, UserEntity>> googleAnonymousLogin() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final login = await remoteDataSource.googleAnonymousLogin();
         return Right(login);
       } on ValidationException catch (e) {
         return Left(ValidationFailure(errors: e.errors, message: e.message));

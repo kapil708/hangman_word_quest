@@ -1,6 +1,11 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hangman_word_quest/core/assets/image_assets.dart';
+import 'package:hangman_word_quest/core/extensions/spacing.dart';
+import 'package:hangman_word_quest/core/extensions/textstyle_extensions.dart';
 
 import '../../../core/enums/app_theme_mode.dart';
 import '../../../core/enums/language.dart';
@@ -17,6 +22,25 @@ class SettingsPage extends StatelessWidget {
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
+
+  void signInWithGoogle() async {
+    // Trigger the authentication flow
+    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+    // Obtain the auth details from the request
+    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+    // Create a new credential
+    final credential = GoogleAuthProvider.credential(
+      accessToken: googleAuth?.accessToken,
+      idToken: googleAuth?.idToken,
+    );
+
+    print(credential.toString());
+
+    // Once signed in, return the UserCredential
+    //return await FirebaseAuth.instance.signInWithCredential(credential);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -42,9 +66,9 @@ class SettingsView extends StatelessWidget {
                   );
                 },
               ),
-              const SizedBox(height: 24),
+              const VSpace(24),
               Text(l10n.theme, style: Theme.of(context).textTheme.titleMedium),
-              const SizedBox(height: 16),
+              const VSpace(16),
               BlocBuilder<AppBloc, AppState>(
                 builder: (context, state) {
                   return SegmentedButton<AppThemeMode>(
@@ -65,6 +89,62 @@ class SettingsView extends StatelessWidget {
                     },
                   );
                 },
+              ),
+              const VSpace(64),
+              Text(
+                "Join HangMan with your favorite social media account",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+              const VSpace(16),
+              Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: Colors.blue.shade50,
+                  //color: const Color(0xFF3D58AD).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Image.asset(
+                      ImageAssets.facebook,
+                      height: 24,
+                      width: 24,
+                    ),
+                    const HSpace(4),
+                    Text(
+                      "Join with Facebook",
+                      style: Theme.of(context).textTheme.titleMedium?.textColor(const Color(0xFF3D58AD)),
+                    ),
+                  ],
+                ),
+              ),
+              const VSpace(16),
+              InkWell(
+                onTap: () => signInWithGoogle(),
+                child: Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  decoration: BoxDecoration(
+                    // color: const Color(0xFFDE5241).withOpacity(0.2),
+                    color: Colors.red.shade50,
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Image.asset(
+                        ImageAssets.google,
+                        height: 24,
+                        width: 24,
+                      ),
+                      const HSpace(8),
+                      Text(
+                        "Join with Google",
+                        style: Theme.of(context).textTheme.titleMedium?.textColor(const Color(0xFFDE5241)),
+                      ),
+                    ],
+                  ),
+                ),
               ),
             ],
           ),

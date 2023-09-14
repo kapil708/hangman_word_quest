@@ -33,6 +33,13 @@ dependencies:
   # class base calls
   json_annotation: ^4.8.1
 
+  # firebase
+  firebase_core: ^2.15.1
+  firebase_auth: ^4.9.0
+
+  # social login
+  google_sign_in: ^6.1.5
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

@@ -1,11 +1,10 @@
 {
   "home": "Home",
   "settings": "Settings",
-  "chooseLanguage": "Choose Prefered Language",
+  "chooseLanguage": "Choose Preferred Language",
   "language": "Language",
   "theme": "Theme",
   "welcomeUser": "Welcome {name}",
-  "@welcomeUser": {"placeholders": {"name": {"type": "String"}}},
 
   "stringWith1Param": "Here is 1st {name}",
   "@stringWith1Param": {"placeholders": {"name": {"type": "String"}}},

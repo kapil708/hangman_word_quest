@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../core/error/exceptions.dart';
@@ -11,9 +13,12 @@ abstract class LocalDataSource {
   String? getLanguage();
   Future<void> cacheThemeMode(String themeModeName);
   String? getThemeMode();
+  Map<String, dynamic> getUser();
+  Future<void> cacheUser(Map<String, dynamic> user);
 }
 
 const _authToken = "authToken";
+const _user = "user";
 const _languagePrefs = "languagePrefs";
 const _themePrefs = "themePrefs";
 
@@ -42,6 +47,11 @@ class LocalDataSourceImpl implements LocalDataSource {
   }
 
   @override
+  Future<void> cacheUser(Map<String, dynamic> user) {
+    return sharedPreferences.setString(_user, jsonEncode(user));
+  }
+
+  @override
   Future<void> cacheLanguage(String languageCode) {
     return sharedPreferences.setString(_languagePrefs, languageCode);
   }
@@ -61,6 +71,16 @@ class LocalDataSourceImpl implements LocalDataSource {
     try {
       final String? jsonString = sharedPreferences.getString(_authToken);
       return jsonString;
+    } on Exception catch (e) {
+      throw CacheException();
+    }
+  }
+
+  @override
+  Map<String, dynamic> getUser() {
+    try {
+      final String? jsonString = sharedPreferences.getString(_user);
+      return jsonDecode(jsonString!);
     } on Exception catch (e) {
       throw CacheException();
     }

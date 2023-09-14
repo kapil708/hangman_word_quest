@@ -32,7 +32,14 @@ class HomeView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        bottom: PreferredSize(
+        title: Text(l10n.home),
+        actions: [
+          IconButton(
+            onPressed: () => context.goNamed(RouteName.settings),
+            icon: const Icon(Icons.settings),
+          ),
+        ],
+        /*bottom: PreferredSize(
           preferredSize: const Size.fromHeight(60),
           child: Padding(
             padding: const EdgeInsets.all(16),
@@ -66,7 +73,7 @@ class HomeView extends StatelessWidget {
               ],
             ),
           ),
-        ),
+        ),*/
       ),
       body: SingleChildScrollView(
         child: Container(

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:http/http.dart' as http;
 
 import '../../core/const/category_list.dart';
@@ -7,6 +8,7 @@ import '../../core/const/word_list.dart';
 import '../../core/error/exceptions.dart';
 import '../models/category/category_model.dart';
 import '../models/login/login_model.dart';
+import '../models/user/user_model.dart';
 import '../models/word/word_model.dart';
 import 'api_methods.dart';
 
@@ -14,6 +16,7 @@ Map<String, String>? get _headers => {'Accept': 'application/json', 'Content-Typ
 
 abstract class RemoteDataSource {
   Future<LoginModel> login(Map<String, dynamic> body);
+  Future<UserModel> googleAnonymousLogin();
   Future<List<CategoryModel>> getCategoryList();
   Future<WordModel> getWordByType(String categoryId);
   Future<List<WordModel>> getWordListByType(String categoryId);
@@ -37,6 +40,18 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       return LoginModel.fromJson(data['data']);
     } else {
       return Future.error(handleErrorResponse(response));
+    }
+  }
+
+  @override
+  Future<UserModel> googleAnonymousLogin() async {
+    try {
+      final userCredential = await FirebaseAuth.instance.signInAnonymously();
+      return UserModel(id: userCredential.user?.uid ?? '1', isAnonymous: userCredential.user?.isAnonymous ?? true);
+    } on FirebaseAuthException catch (e) {
+      return Future.error(
+        ServerException(statusCode: 422, message: e.code),
+      );
     }
   }
 

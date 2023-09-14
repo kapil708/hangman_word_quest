@@ -123,7 +123,6 @@ class _GamePlayViewState extends State<GamePlayView> {
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: RichText(
-                        //textAlign: TextAlign.center,
                         text: TextSpan(
                           text: "${gBloc.categoryName}${gBloc.word.hint != null ? ': ' : ''}",
                           style: Theme.of(context).textTheme.titleMedium?.textColor(

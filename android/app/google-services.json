@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "267776213776",
+    "project_id": "hangman-4d9a1",
+    "storage_bucket": "hangman-4d9a1.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:267776213776:android:21c7c28a0eb89690335b95",
+        "android_client_info": {
+          "package_name": "com.appathon.hangman_word_quest"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-Bnj9sYGVVtfv5obbik8R2tHC__rxUu0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
