@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hangman_word_quest/core/extensions/textstyle_extensions.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../core/assets/image_assets.dart';
@@ -9,12 +10,15 @@ import '../../../injection_container.dart';
 import '../../bloc/game_play/game_play_bloc.dart';
 
 class GamePlayPage extends StatelessWidget {
-  const GamePlayPage({super.key});
+  final String categoryId;
+  final String categoryName;
+
+  const GamePlayPage({super.key, required this.categoryId, required this.categoryName});
 
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => locator.get<GamePlayBloc>()..add(OnGamePlayInit()),
+      create: (_) => locator.get<GamePlayBloc>()..add(OnGamePlayInit(categoryId, categoryName)),
       child: const GamePlayView(),
     );
   }
@@ -50,130 +54,156 @@ class _GamePlayViewState extends State<GamePlayView> {
 
           return Padding(
             padding: const EdgeInsets.all(16),
-            child: Column(
+            child: Stack(
               children: [
-                // Header
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                // Body
+                Column(
                   children: [
-                    IconButton(
-                      onPressed: () => Navigator.pop(context),
-                      icon: const Icon(
-                        Icons.home_outlined,
-                        size: 40,
-                      ),
-                    ),
-                    InkWell(
-                      onTap: () {},
-                      child: Text(
-                        "Level 1",
-                        style: Theme.of(context).textTheme.headlineSmall,
-                      ),
-                    ),
-                  ],
-                ),
-                const Spacer(),
-
-                // Figure
-                Stack(
-                  children: [
-                    figureImage(gBloc.attempt >= 0, ImageAssets.hmHang),
-                    figureImage(gBloc.attempt >= 1, ImageAssets.hmHead),
-                    figureImage(gBloc.attempt >= 2, ImageAssets.hmBody),
-                    figureImage(gBloc.attempt >= 3, ImageAssets.hmRightArm),
-                    figureImage(gBloc.attempt >= 4, ImageAssets.hmLeftArm),
-                    figureImage(gBloc.attempt >= 5, ImageAssets.hmRightLag),
-                    figureImage(gBloc.attempt >= 6, ImageAssets.hmLeftLag),
-                  ],
-                ),
-                const Spacer(),
-
-                // Word
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    ...gBloc.word.name.characters.map((e) {
-                      return Container(
-                        decoration: const BoxDecoration(border: Border(bottom: BorderSide())),
-                        margin: const EdgeInsets.only(right: 10),
-                        width: wordSize,
-                        alignment: Alignment.center,
-                        child: Text(
-                          gBloc.correctAlphabets.contains(e.toLowerCase()) ? e.toUpperCase() : '',
-                          style: Theme.of(context).textTheme.headlineMedium,
-                        ),
-                      );
-                    }),
-                  ],
-                ),
-                const VSpace(32),
-
-                // Hint
-                RichText(
-                  //textAlign: TextAlign.center,
-                  text: TextSpan(
-                    text: "Animal: ",
-                    style: Theme.of(context).textTheme.titleMedium,
-                    children: [
-                      TextSpan(
-                        text: gBloc.word.hint,
-                        style: Theme.of(context).textTheme.bodyLarge,
-                      ),
-                    ],
-                  ),
-                ),
-                const VSpace(8),
-
-                // Alphabets
-                Wrap(
-                  alignment: WrapAlignment.center,
-                  children: [
-                    ...alphabets.map((e) {
-                      return Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          InkWell(
-                            onTap: () {
-                              if (!gBloc.correctAlphabets.contains(e) && !gBloc.wrongAlphabets.contains(e)) {
-                                //characterClick(e.toLowerCase());
-                                context.read<GamePlayBloc>().add(CharacterClick(e.toLowerCase()));
-                              }
-                            },
-                            child: Container(
-                              // decoration: BoxDecoration(border: Border.all()),
-                              width: boxSize,
-                              height: boxSize,
-                              alignment: Alignment.center,
-                              child: Text(
-                                e,
-                                style: Theme.of(context).textTheme.headlineMedium,
-                              ),
-                            ),
+                    // Header
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        IconButton(
+                          onPressed: () => Navigator.pop(context),
+                          icon: const Icon(
+                            Icons.home_outlined,
+                            size: 40,
                           ),
-                          if (gBloc.correctAlphabets.contains(e.toLowerCase()))
-                            Padding(
-                              padding: const EdgeInsets.all(2),
-                              child: Icon(
-                                Icons.check,
-                                color: Colors.green,
-                                size: boxSize - 10,
-                              ),
+                        ),
+                        InkWell(
+                          onTap: () {},
+                          child: Text(
+                            "Level 1",
+                            style: Theme.of(context).textTheme.headlineSmall,
+                          ),
+                        ),
+                      ],
+                    ),
+                    const Spacer(),
+
+                    // Figure
+                    Stack(
+                      children: [
+                        figureImage(gBloc.attempt >= 0, ImageAssets.hmHang),
+                        figureImage(gBloc.attempt >= 1, ImageAssets.hmHead),
+                        figureImage(gBloc.attempt >= 2, ImageAssets.hmBody),
+                        figureImage(gBloc.attempt >= 3, ImageAssets.hmRightArm),
+                        figureImage(gBloc.attempt >= 4, ImageAssets.hmLeftArm),
+                        figureImage(gBloc.attempt >= 5, ImageAssets.hmRightLag),
+                        figureImage(gBloc.attempt >= 6, ImageAssets.hmLeftLag),
+                      ],
+                    ),
+                    const Spacer(),
+
+                    // Word
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ...gBloc.word.name.characters.map((e) {
+                          return Container(
+                            decoration: const BoxDecoration(border: Border(bottom: BorderSide())),
+                            margin: const EdgeInsets.only(right: 10),
+                            width: wordSize,
+                            alignment: Alignment.center,
+                            child: Text(
+                              gBloc.correctAlphabets.contains(e.toLowerCase()) ? e.toUpperCase() : '',
+                              style: Theme.of(context).textTheme.headlineMedium,
                             ),
-                          if (gBloc.wrongAlphabets.contains(e.toLowerCase()))
-                            Padding(
-                              padding: const EdgeInsets.all(2),
-                              child: Icon(
-                                Icons.highlight_remove,
-                                color: Colors.red,
-                                size: boxSize - 10,
+                          );
+                        }),
+                      ],
+                    ),
+                    const VSpace(32),
+
+                    // Hint
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: Theme.of(context).colorScheme.primaryContainer,
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: RichText(
+                        //textAlign: TextAlign.center,
+                        text: TextSpan(
+                          text: "${gBloc.categoryName}${gBloc.word.hint != null ? ': ' : ''}",
+                          style: Theme.of(context).textTheme.titleMedium?.textColor(
+                                Theme.of(context).colorScheme.onPrimaryContainer,
                               ),
-                            ),
-                        ],
-                      );
-                    }).toList(),
+                          children: [
+                            if (gBloc.word.hint != null)
+                              TextSpan(
+                                text: gBloc.word.hint,
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                          ],
+                        ),
+                      ),
+                    ),
+                    const VSpace(8),
+
+                    // Alphabets
+                    Wrap(
+                      alignment: WrapAlignment.center,
+                      children: [
+                        ...alphabets.map((e) {
+                          return Stack(
+                            alignment: Alignment.center,
+                            children: [
+                              InkWell(
+                                onTap: () {
+                                  if (!gBloc.correctAlphabets.contains(e) && !gBloc.wrongAlphabets.contains(e)) {
+                                    //characterClick(e.toLowerCase());
+                                    context.read<GamePlayBloc>().add(CharacterClick(e.toLowerCase()));
+                                  }
+                                },
+                                child: Container(
+                                  // decoration: BoxDecoration(border: Border.all()),
+                                  width: boxSize,
+                                  height: boxSize,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    e,
+                                    style: Theme.of(context).textTheme.headlineMedium,
+                                  ),
+                                ),
+                              ),
+                              if (gBloc.correctAlphabets.contains(e.toLowerCase()))
+                                Padding(
+                                  padding: const EdgeInsets.all(2),
+                                  child: Icon(
+                                    Icons.check,
+                                    color: Colors.green,
+                                    size: boxSize - 10,
+                                  ),
+                                ),
+                              if (gBloc.wrongAlphabets.contains(e.toLowerCase()))
+                                Padding(
+                                  padding: const EdgeInsets.all(2),
+                                  child: Icon(
+                                    Icons.highlight_remove,
+                                    color: Colors.red,
+                                    size: boxSize - 10,
+                                  ),
+                                ),
+                            ],
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                    const VSpace(32),
                   ],
                 ),
-                const VSpace(32),
+
+                // Loading
+                if (state is STWordLoading)
+                  const Center(
+                    child: Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: CircularProgressIndicator(),
+                      ),
+                    ),
+                  ),
               ],
             ),
           );

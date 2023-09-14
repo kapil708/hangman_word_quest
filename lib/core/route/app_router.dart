@@ -35,7 +35,15 @@ class AppRouter {
           GoRoute(
             path: 'gamePlay',
             name: RouteName.gamePlay,
-            builder: (context, state) => const GamePlayPage(),
+            builder: (context, state) {
+              var categoryId = state.uri.queryParameters['categoryId']!;
+              var categoryName = state.uri.queryParameters['categoryName']!;
+
+              return GamePlayPage(
+                categoryId: categoryId,
+                categoryName: categoryName,
+              );
+            },
           ),
           GoRoute(
             path: 'settings',

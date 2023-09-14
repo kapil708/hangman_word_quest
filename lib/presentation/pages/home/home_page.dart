@@ -102,7 +102,13 @@ class HomeView extends StatelessWidget {
                           itemBuilder: (BuildContext context, int index) {
                             CategoryEntity category = state.categoryList[index];
                             return InkWell(
-                              onTap: () => context.goNamed(RouteName.gamePlay),
+                              onTap: () => context.goNamed(
+                                RouteName.gamePlay,
+                                queryParameters: {
+                                  'categoryId': category.id,
+                                  'categoryName': category.name,
+                                },
+                              ),
                               child: Stack(
                                 alignment: Alignment.bottomCenter,
                                 children: [

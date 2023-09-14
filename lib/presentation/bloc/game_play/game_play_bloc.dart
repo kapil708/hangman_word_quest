@@ -12,6 +12,8 @@ part 'game_play_state.dart';
 class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
   final WordUseCase wordUseCase;
 
+  String categoryId = "";
+  String categoryName = "";
   List<String> wrongAlphabets = [];
   List<String> correctAlphabets = [];
   int attempt = 0;
@@ -26,7 +28,10 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
   onGamePlayInit(OnGamePlayInit event, Emitter<GamePlayState> emit) async {
     emit(STWordLoading());
 
-    final response = await wordUseCase.getWordByType('1');
+    categoryId = event.categoryId;
+    categoryName = event.categoryName;
+
+    final response = await wordUseCase.getWordByType(categoryId);
 
     response.fold((failure) {
       String message = _mapFailureToMessage(failure) ?? '';

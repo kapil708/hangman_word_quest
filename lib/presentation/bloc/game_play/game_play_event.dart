@@ -18,8 +18,13 @@ class WordLoaded extends GamePlayEvent {
 }
 
 class OnGamePlayInit extends GamePlayEvent {
+  final String categoryId;
+  final String categoryName;
+
+  OnGamePlayInit(this.categoryId, this.categoryName);
+
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [categoryId, categoryName];
 }
 
 class Retry extends GamePlayEvent {
