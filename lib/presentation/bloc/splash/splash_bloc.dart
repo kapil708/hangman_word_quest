@@ -17,17 +17,26 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
   }
 
   onInit(Init event, Emitter<SplashState> emit) async {
-    final response = await loginUseCase.googleAnonymousLogin();
-    response.fold(
-      (failure) {
-        print("failure: ${failure.runtimeType.toString()}");
-        emit(STLoginFailed());
-      },
-      (data) {
-        localDataSource.cacheUser(data.toJson());
-        print("User: ${data.toJson()}");
-        emit(STLoginSuccess());
-      },
-    );
+    // get user data
+    var userData = localDataSource.getUser();
+
+    print("userData: $userData");
+
+    if (userData == null) {
+      final response = await loginUseCase.googleAnonymousLogin();
+      response.fold(
+        (failure) {
+          print("failure: ${failure.runtimeType.toString()}");
+          emit(STLoginFailed());
+        },
+        (data) {
+          localDataSource.cacheUser(data.toJson());
+          print("User: ${data.toJson()}");
+          emit(STLoginSuccess());
+        },
+      );
+    } else {
+      emit(STLoginSuccess());
+    }
   }
 }

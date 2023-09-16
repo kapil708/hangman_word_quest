@@ -15,50 +15,44 @@ class WordRepositoryImpl implements WordRepository {
   WordRepositoryImpl({required this.remoteDataSource, required this.networkInfo});
 
   @override
-  Future<Either<Failure, List<CategoryEntity>>> getCategoryList() async {
+  Future<Either<RemoteFailure, List<CategoryEntity>>> getCategoryList() async {
     if (await networkInfo.isConnected) {
       try {
         final categoryList = await remoteDataSource.getCategoryList();
         return Right(categoryList);
-      } on ValidationException catch (e) {
-        return Left(ValidationFailure(errors: e.errors, message: e.message));
-      } on ServerException catch (e) {
-        return Left(ServerFailure(statusCode: e.statusCode, message: e.message));
+      } on RemoteException catch (e) {
+        return Left(RemoteFailure(statusCode: e.statusCode, message: e.message));
       }
     } else {
-      return Left(NetworkFailure());
+      return const Left(RemoteFailure(statusCode: 12163, message: 'No internet connection'));
     }
   }
 
   @override
-  Future<Either<Failure, WordEntity>> getWordByType(String categoryId) async {
+  Future<Either<RemoteFailure, WordEntity>> getWordByType({required String categoryId, String? wordId}) async {
     if (await networkInfo.isConnected) {
       try {
-        final word = await remoteDataSource.getWordByType(categoryId);
+        final word = await remoteDataSource.getWordByType(categoryId: categoryId, wordId: wordId);
         return Right(word);
-      } on ValidationException catch (e) {
-        return Left(ValidationFailure(errors: e.errors, message: e.message));
-      } on ServerException catch (e) {
-        return Left(ServerFailure(statusCode: e.statusCode, message: e.message));
+      } on RemoteException catch (e) {
+        return Left(RemoteFailure(statusCode: e.statusCode, message: e.message));
       }
     } else {
-      return Left(NetworkFailure());
+      return const Left(RemoteFailure(statusCode: 12163, message: 'No internet connection'));
     }
   }
 
   @override
-  Future<Either<Failure, List<WordEntity>>> getWordListByType(String categoryId) async {
+  Future<Either<RemoteFailure, List<WordEntity>>> getWordListByType(String categoryId) async {
     if (await networkInfo.isConnected) {
       try {
         final wordList = await remoteDataSource.getWordListByType(categoryId);
         return Right(wordList);
-      } on ValidationException catch (e) {
-        return Left(ValidationFailure(errors: e.errors, message: e.message));
-      } on ServerException catch (e) {
-        return Left(ServerFailure(statusCode: e.statusCode, message: e.message));
+      } on RemoteException catch (e) {
+        return Left(RemoteFailure(statusCode: e.statusCode, message: e.message));
       }
     } else {
-      return Left(NetworkFailure());
+      return const Left(RemoteFailure(statusCode: 12163, message: 'No internet connection'));
     }
   }
 }

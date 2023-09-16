@@ -13,7 +13,7 @@ abstract class LocalDataSource {
   String? getLanguage();
   Future<void> cacheThemeMode(String themeModeName);
   String? getThemeMode();
-  Map<String, dynamic> getUser();
+  dynamic getUser();
   Future<void> cacheUser(Map<String, dynamic> user);
 }
 
@@ -37,7 +37,7 @@ class LocalDataSourceImpl implements LocalDataSource {
         return Future.value(false);
       }
     } on Exception catch (e) {
-      throw CacheException();
+      throw RemoteException(statusCode: e.hashCode, message: e.toString());
     }
   }
 
@@ -72,17 +72,21 @@ class LocalDataSourceImpl implements LocalDataSource {
       final String? jsonString = sharedPreferences.getString(_authToken);
       return jsonString;
     } on Exception catch (e) {
-      throw CacheException();
+      throw RemoteException(statusCode: e.hashCode, message: e.toString());
     }
   }
 
   @override
-  Map<String, dynamic> getUser() {
+  dynamic getUser() {
     try {
       final String? jsonString = sharedPreferences.getString(_user);
-      return jsonDecode(jsonString!);
+      if (jsonString != null) {
+        return jsonDecode(jsonString);
+      } else {
+        return null;
+      }
     } on Exception catch (e) {
-      throw CacheException();
+      throw RemoteException(statusCode: e.hashCode, message: e.toString());
     }
   }
 
@@ -92,7 +96,7 @@ class LocalDataSourceImpl implements LocalDataSource {
       final String? jsonString = sharedPreferences.getString(_languagePrefs);
       return jsonString;
     } on Exception catch (e) {
-      throw CacheException();
+      throw RemoteException(statusCode: e.hashCode, message: e.toString());
     }
   }
 
@@ -102,7 +106,7 @@ class LocalDataSourceImpl implements LocalDataSource {
       final String? jsonString = sharedPreferences.getString(_themePrefs);
       return jsonString;
     } on Exception catch (e) {
-      throw CacheException();
+      throw RemoteException(statusCode: e.hashCode, message: e.toString());
     }
   }
 }

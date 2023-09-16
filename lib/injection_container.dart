@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:hangman_word_quest/presentation/bloc/settings/settings_cubit.dart';
 import 'package:http/http.dart' as http;
 import 'package:internet_connection_checker_plus/internet_connection_checker_plus.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -23,6 +24,7 @@ Future<void> setUp() async {
   // Features
   locator.registerFactory(() => SplashBloc(loginUseCase: locator(), localDataSource: locator()));
   locator.registerFactory(() => LoginBloc(loginUseCase: locator(), localDataSource: locator()));
+  locator.registerFactory(() => SettingsCubit(loginUseCase: locator(), localDataSource: locator()));
   locator.registerFactory(() => CategoryBloc(wordUseCase: locator()));
   locator.registerFactory(() => GamePlayBloc(wordUseCase: locator()));
 

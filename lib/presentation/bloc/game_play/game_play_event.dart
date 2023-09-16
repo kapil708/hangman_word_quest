@@ -32,6 +32,11 @@ class Retry extends GamePlayEvent {
   List<Object?> get props => [];
 }
 
+class NextGame extends GamePlayEvent {
+  @override
+  List<Object?> get props => [];
+}
+
 class CharacterClick extends GamePlayEvent {
   final String character;
 

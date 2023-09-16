@@ -10,11 +10,15 @@ class LoginUseCase {
 
   LoginUseCase({required this.userRepository});
 
-  Future<Either<Failure, LoginEntity>> login(Map<String, dynamic> body) async {
+  Future<Either<RemoteFailure, LoginEntity>> login(Map<String, dynamic> body) async {
     return userRepository.login(body);
   }
 
-  Future<Either<Failure, UserEntity>> googleAnonymousLogin() async {
+  Future<Either<RemoteFailure, UserEntity>> googleAnonymousLogin() async {
     return userRepository.googleAnonymousLogin();
+  }
+
+  Future<Either<RemoteFailure, UserEntity>> googleLogin() async {
+    return userRepository.googleLogin();
   }
 }

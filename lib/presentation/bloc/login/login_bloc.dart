@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../../core/error/failures.dart';
 import '../../../../data/data_sources/local_data_source.dart';
 import '../../../domain/use_cases/login_user_case.dart';
 
@@ -27,12 +26,10 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
 
         response.fold(
           (failure) {
-            String? message = _mapFailureToMessage(failure);
-
-            if (failure.runtimeType == ValidationFailure) {
-              emit(LoginStateFailed(message));
+            if (failure.statusCode == 422) {
+              emit(LoginStateFailed(failure.message));
             } else {
-              emit(LoginStateException(message));
+              emit(LoginStateException(failure.message));
             }
           },
           (data) {
@@ -48,23 +45,5 @@ class LoginBloc extends Bloc<LoginEvent, LoginState> {
         emit(LoginStateException(e.toString()));
       }
     });
-  }
-
-  String? _mapFailureToMessage(Failure failure) {
-    switch (failure.runtimeType) {
-      case ValidationFailure:
-        ValidationFailure vf = failure as ValidationFailure;
-        if (vf.errors != null) {
-          return vf.errors['message']?[0] ?? vf.errors['username']?[0];
-        } else {
-          return vf.message;
-        }
-      case ServerFailure:
-        return (failure as ServerFailure).message;
-      case CacheFailure:
-        return 'No internet connected';
-      default:
-        return null;
-    }
   }
 }

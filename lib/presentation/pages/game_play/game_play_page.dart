@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hangman_word_quest/core/extensions/textstyle_extensions.dart';
+import 'package:hangman_word_quest/core/extensions/text_style_extensions.dart';
 import 'package:lottie/lottie.dart';
 
 import '../../../core/assets/image_assets.dart';
@@ -262,7 +262,7 @@ class _GamePlayViewState extends State<GamePlayView> {
                   const VSpace(16),
                   FilledButton(
                     onPressed: () {
-                      context.read<GamePlayBloc>().add(Retry());
+                      context.read<GamePlayBloc>().add(NextGame());
                       Navigator.pop(context);
                     },
                     child: const Text("Next"),

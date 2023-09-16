@@ -1,46 +1,30 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:hangman_word_quest/core/assets/image_assets.dart';
-import 'package:hangman_word_quest/core/extensions/spacing.dart';
-import 'package:hangman_word_quest/core/extensions/textstyle_extensions.dart';
 
+import '../../../core/assets/image_assets.dart';
 import '../../../core/enums/app_theme_mode.dart';
 import '../../../core/enums/language.dart';
+import '../../../core/extensions/spacing.dart';
+import '../../../core/extensions/text_style_extensions.dart';
+import '../../../injection_container.dart';
 import '../../bloc/app/app_bloc.dart';
+import '../../bloc/settings/settings_cubit.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const SettingsView();
+    return BlocProvider(
+      create: (_) => locator.get<SettingsCubit>()..init(),
+      child: const SettingsView(),
+    );
   }
 }
 
 class SettingsView extends StatelessWidget {
   const SettingsView({super.key});
-
-  void signInWithGoogle() async {
-    // Trigger the authentication flow
-    final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
-
-    // Obtain the auth details from the request
-    final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
-
-    // Create a new credential
-    final credential = GoogleAuthProvider.credential(
-      accessToken: googleAuth?.accessToken,
-      idToken: googleAuth?.idToken,
-    );
-
-    print(credential.toString());
-
-    // Once signed in, return the UserCredential
-    //return await FirebaseAuth.instance.signInWithCredential(credential);
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -54,6 +38,128 @@ class SettingsView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              // Social login
+              BlocConsumer<SettingsCubit, SettingsState>(
+                listener: (context, state) {
+                  if (state is STLoginFailed) {
+                    showDialog(
+                        context: context,
+                        builder: (_) {
+                          return Dialog(
+                            child: Padding(
+                              padding: const EdgeInsets.all(16),
+                              child: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Text(
+                                    state.message,
+                                    style: Theme.of(context).textTheme.bodyLarge,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  TextButton(
+                                    onPressed: () {
+                                      context.read<SettingsCubit>().emit(STMessageClosed());
+                                      Navigator.pop(context);
+                                    },
+                                    child: const Text('Close'),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        });
+                  }
+                },
+                builder: (context, state) {
+                  SettingsCubit settingsCubit = context.read<SettingsCubit>();
+                  return (settingsCubit.userEntity == null || settingsCubit.userEntity?.isAnonymous == true)
+                      ? Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              "Join HangMan with your favorite social media account",
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                            const VSpace(16),
+                            InkWell(
+                              onTap: () => context.read<SettingsCubit>().googleSignIn(),
+                              //onTap: () => signInWithGoogle(),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                                decoration: BoxDecoration(
+                                  // color: const Color(0xFFDE5241).withOpacity(0.2),
+                                  color: Colors.red.shade50,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Image.asset(
+                                      ImageAssets.google,
+                                      height: 24,
+                                      width: 24,
+                                    ),
+                                    const HSpace(8),
+                                    Text(
+                                      "Join with Google",
+                                      style: Theme.of(context).textTheme.titleMedium?.textColor(const Color(0xFFDE5241)),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const VSpace(16),
+                            Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: Colors.blue.shade50,
+                                //color: const Color(0xFF3D58AD).withOpacity(0.1),
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: Row(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                children: [
+                                  Image.asset(
+                                    ImageAssets.facebook,
+                                    height: 24,
+                                    width: 24,
+                                  ),
+                                  const HSpace(4),
+                                  Text(
+                                    "Join with Facebook",
+                                    style: Theme.of(context).textTheme.titleMedium?.textColor(const Color(0xFF3D58AD)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        )
+                      : (settingsCubit.userEntity != null || settingsCubit.userEntity?.isAnonymous == false)
+                          ? Row(
+                              children: [
+                                if (settingsCubit.userEntity?.image != null)
+                                  Padding(
+                                    padding: const EdgeInsets.only(right: 16),
+                                    child: ClipOval(
+                                      child: Image.network(
+                                        settingsCubit.userEntity?.image ?? '',
+                                        width: 48,
+                                        height: 48,
+                                      ),
+                                    ),
+                                  ),
+                                Text(
+                                  settingsCubit.userEntity?.name ?? '',
+                                  style: Theme.of(context).textTheme.titleLarge,
+                                ),
+                              ],
+                            )
+                          : const SizedBox();
+                },
+              ),
+              const VSpace(16),
+
               Text(l10n.language, style: Theme.of(context).textTheme.titleMedium),
               //const SizedBox(height: 8),
               BlocBuilder<AppBloc, AppState>(
@@ -91,61 +197,6 @@ class SettingsView extends StatelessWidget {
                 },
               ),
               const VSpace(64),
-              Text(
-                "Join HangMan with your favorite social media account",
-                style: Theme.of(context).textTheme.bodyLarge,
-              ),
-              const VSpace(16),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: Colors.blue.shade50,
-                  //color: const Color(0xFF3D58AD).withOpacity(0.1),
-                  borderRadius: BorderRadius.circular(8),
-                ),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Image.asset(
-                      ImageAssets.facebook,
-                      height: 24,
-                      width: 24,
-                    ),
-                    const HSpace(4),
-                    Text(
-                      "Join with Facebook",
-                      style: Theme.of(context).textTheme.titleMedium?.textColor(const Color(0xFF3D58AD)),
-                    ),
-                  ],
-                ),
-              ),
-              const VSpace(16),
-              InkWell(
-                onTap: () => signInWithGoogle(),
-                child: Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                  decoration: BoxDecoration(
-                    // color: const Color(0xFFDE5241).withOpacity(0.2),
-                    color: Colors.red.shade50,
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Image.asset(
-                        ImageAssets.google,
-                        height: 24,
-                        width: 24,
-                      ),
-                      const HSpace(8),
-                      Text(
-                        "Join with Google",
-                        style: Theme.of(context).textTheme.titleMedium?.textColor(const Color(0xFFDE5241)),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
             ],
           ),
         ),

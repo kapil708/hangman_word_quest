@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
-import 'package:hangman_word_quest/core/extensions/textstyle_extensions.dart';
+import 'package:hangman_word_quest/core/extensions/text_style_extensions.dart';
 
 import '../../../core/extensions/spacing.dart';
 import '../../../core/route/route_names.dart';

@@ -2,7 +2,6 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../core/error/failures.dart';
 import '../../../domain/entities/word_entity.dart';
 import '../../../domain/use_cases/word_user_case.dart';
 
@@ -23,6 +22,7 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
     on<OnGamePlayInit>(onGamePlayInit);
     on<CharacterClick>(onCharacterClick);
     on<Retry>(onRetry);
+    on<NextGame>(onNextGame);
   }
 
   onGamePlayInit(OnGamePlayInit event, Emitter<GamePlayState> emit) async {
@@ -31,11 +31,10 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
     categoryId = event.categoryId;
     categoryName = event.categoryName;
 
-    final response = await wordUseCase.getWordByType(categoryId);
+    final response = await wordUseCase.getWordByType(categoryId: categoryId);
 
     response.fold((failure) {
-      String message = _mapFailureToMessage(failure) ?? '';
-      emit(STWordFailed(message));
+      emit(STWordFailed(failure.message));
     }, (data) {
       word = data;
       emit(STWordLoaded(data));
@@ -43,9 +42,13 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
   }
 
   onCharacterClick(CharacterClick event, Emitter<GamePlayState> emit) async {
+    print("event.character : ${event.character}, word.name : ${word.name.toLowerCase().contains(event.character)}");
     if (word.name.toLowerCase().contains(event.character)) {
-      int matchCount = event.character.allMatches(word.name).length;
+      int matchCount = event.character.allMatches(word.name.toLowerCase()).length;
       correctAlphabets.addAll(List.filled(matchCount, event.character));
+
+      print("matchCount: $matchCount");
+      //print("matchCount: $matchCount");
 
       if (word.name.length == correctAlphabets.length) {
         emit(STWinner());
@@ -72,21 +75,19 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
     emit(STGamePlayReload());
   }
 
-  String? _mapFailureToMessage(Failure failure) {
-    switch (failure.runtimeType) {
-      case ValidationFailure:
-        ValidationFailure vf = failure as ValidationFailure;
-        if (vf.errors != null) {
-          return vf.errors['message']?[0] ?? vf.errors['username']?[0];
-        } else {
-          return vf.message;
-        }
-      case ServerFailure:
-        return (failure as ServerFailure).message;
-      case CacheFailure:
-        return 'No internet connected';
-      default:
-        return null;
-    }
+  onNextGame(NextGame event, Emitter<GamePlayState> emit) async {
+    emit(STWordLoading());
+
+    final response = await wordUseCase.getWordByType(categoryId: categoryId, wordId: word.id);
+
+    response.fold((failure) {
+      emit(STWordFailed(failure.message));
+    }, (data) {
+      wrongAlphabets = [];
+      correctAlphabets = [];
+      attempt = 0;
+      word = data;
+      emit(STWordLoaded(data));
+    });
   }
 }

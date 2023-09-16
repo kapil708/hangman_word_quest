@@ -10,15 +10,15 @@ class WordUseCase {
 
   WordUseCase({required this.wordRepository});
 
-  Future<Either<Failure, List<CategoryEntity>>> getCategoryList() async {
+  Future<Either<RemoteFailure, List<CategoryEntity>>> getCategoryList() async {
     return wordRepository.getCategoryList();
   }
 
-  Future<Either<Failure, WordEntity>> getWordByType(String categoryId) async {
-    return wordRepository.getWordByType(categoryId);
+  Future<Either<RemoteFailure, WordEntity>> getWordByType({required String categoryId, String? wordId}) async {
+    return wordRepository.getWordByType(categoryId: categoryId, wordId: wordId);
   }
 
-  Future<Either<Failure, List<WordEntity>>> getWordListByType(String categoryId) async {
+  Future<Either<RemoteFailure, List<WordEntity>>> getWordListByType(String categoryId) async {
     return wordRepository.getWordListByType(categoryId);
   }
 }
