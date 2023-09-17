@@ -1,7 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hangman_word_quest/injection_container.dart';
 
+import '../../../data/data_sources/local_data_source.dart';
 import '../../../domain/entities/word_entity.dart';
 import '../../../domain/use_cases/word_user_case.dart';
 
@@ -18,6 +20,10 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
   int attempt = 0;
   WordEntity word = const WordEntity(id: '1', categoryId: '1', name: '', hint: '');
 
+  // score & level
+  int userScore = 0;
+  int userLevel = 0;
+
   GamePlayBloc({required this.wordUseCase}) : super(STGamePlayInitial()) {
     on<OnGamePlayInit>(onGamePlayInit);
     on<CharacterClick>(onCharacterClick);
@@ -30,6 +36,11 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
 
     categoryId = event.categoryId;
     categoryName = event.categoryName;
+
+    // get user data
+    var userData = locator.get<LocalDataSource>().getUser();
+    userScore = userData['score'];
+    userLevel = userData['level'];
 
     final response = await wordUseCase.getWordByType(categoryId: categoryId);
 
@@ -50,12 +61,22 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
 
       if (word.name.length == correctAlphabets.length) {
         int score = 6 - attempt;
-        await wordUseCase.updatePlayedWord(wordId: word.id, score: score);
-        emit(STWinner());
+        var response = await wordUseCase.updatePlayedWord(wordId: word.id, score: score);
+        response.fold(
+          (l) {},
+          (data) {
+            userScore = data['score'];
+            userLevel = data['level'];
+            emit(STWinner());
+          },
+        );
       } else {
         emit(STCorrectAlphabets(correctAlphabets));
       }
     } else {
+      print("wrongAlphabets: $wrongAlphabets");
+      print("event.character: ${event.character}");
+
       wrongAlphabets.add(event.character);
       attempt++;
 

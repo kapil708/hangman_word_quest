@@ -12,6 +12,7 @@ UserModel _$UserModelFromJson(Map<String, dynamic> json) => UserModel(
       image: json['image'] as String?,
       isAnonymous: json['is_anonymous'] as bool? ?? false,
       level: json['level'] as int?,
+      score: json['score'] as int?,
     );
 
 Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
@@ -20,4 +21,5 @@ Map<String, dynamic> _$UserModelToJson(UserModel instance) => <String, dynamic>{
       'name': instance.name,
       'image': instance.image,
       'level': instance.level,
+      'score': instance.score,
     };

@@ -23,7 +23,7 @@ abstract class RemoteDataSource {
   Future<UserModel> googleLogin();
   Future<List<CategoryModel>> getCategoryList();
   Future<WordModel> getWordByType({required String categoryId});
-  Future<bool> updatePlayedWord({required String wordId, required int score});
+  Future<Map<String, dynamic>> updatePlayedWord({required String wordId, required int score});
   Future<List<WordModel>> getWordListByType(String categoryId);
 }
 
@@ -148,7 +148,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<bool> updatePlayedWord({required String wordId, required int score}) async {
+  Future<Map<String, dynamic>> updatePlayedWord({required String wordId, required int score}) async {
     // get user data
     var userData = locator.get<LocalDataSource>().getUser();
 
@@ -172,7 +172,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     userData['score'] = newScore;
     locator.get<LocalDataSource>().cacheUser(userData);
 
-    return true;
+    return {'score': newScore, 'level': newLevel};
   }
 
   @override

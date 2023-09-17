@@ -46,7 +46,7 @@ android {
 
     defaultConfig {
         applicationId "com.appathon.hangman_word_quest"
-        minSdkVersion 19
+        minSdkVersion 21
         targetSdkVersion 33
         versionCode 1
         versionName '1.0.0'

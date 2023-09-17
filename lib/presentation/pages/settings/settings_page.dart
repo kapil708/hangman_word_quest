@@ -157,7 +157,8 @@ class SettingsView extends StatelessWidget {
                                       style: Theme.of(context).textTheme.titleLarge,
                                     ),
                                     Text(
-                                      "Level: ${settingsCubit.userEntity?.level ?? '0'}",
+                                      "Level: ${settingsCubit.userEntity?.level ?? '0'} | "
+                                      "Score: ${settingsCubit.userEntity?.score ?? '0'}",
                                       style: Theme.of(context).textTheme.bodyLarge,
                                     ),
                                   ],

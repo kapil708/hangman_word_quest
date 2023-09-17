@@ -34,7 +34,7 @@ class GamePlayView extends StatefulWidget {
 class _GamePlayViewState extends State<GamePlayView> {
   @override
   Widget build(BuildContext context) {
-    double boxSize = (MediaQuery.sizeOf(context).width - 32) / 7;
+    double boxSize = (MediaQuery.sizeOf(context).width - 40) / 10;
     double wordSize = (MediaQuery.sizeOf(context).width - 32) / 10;
 
     return Scaffold(
@@ -42,18 +42,21 @@ class _GamePlayViewState extends State<GamePlayView> {
       body: BlocConsumer<GamePlayBloc, GamePlayState>(
         listener: (context, state) {
           if (state is STWordFailed) {
-            showNoDataDialog(context, state.message);
+            //showNoDataDialog(context, state.message);
+            showNoDataAlertDialog(context, state.message);
           } else if (state is STAttemptOver) {
-            showFailedDialog(context);
+            // showFailedDialog(context);
+            showFailedAlertDialog(context);
           } else if (state is STWinner) {
-            showWinnerDialog(context);
+            //showWinnerDialog(context);
+            showWinnerAlertDialog(context);
           }
         },
         builder: (context, state) {
           GamePlayBloc gBloc = context.read<GamePlayBloc>();
 
           return Padding(
-            padding: const EdgeInsets.all(16),
+            padding: const EdgeInsets.symmetric(vertical: 16),
             child: Stack(
               children: [
                 // Body
@@ -70,11 +73,15 @@ class _GamePlayViewState extends State<GamePlayView> {
                             size: 40,
                           ),
                         ),
-                        InkWell(
-                          onTap: () {},
+                        Text(
+                          "Score ${gBloc.userScore}",
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.only(right: 16),
                           child: Text(
-                            "Level 1",
-                            style: Theme.of(context).textTheme.headlineSmall,
+                            "Level ${gBloc.userLevel}",
+                            style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
                       ],
@@ -101,7 +108,13 @@ class _GamePlayViewState extends State<GamePlayView> {
                       children: [
                         ...gBloc.word.name.characters.map((e) {
                           return Container(
-                            decoration: const BoxDecoration(border: Border(bottom: BorderSide())),
+                            decoration: BoxDecoration(
+                              border: Border(
+                                bottom: BorderSide(
+                                  color: Theme.of(context).colorScheme.onBackground,
+                                ),
+                              ),
+                            ),
                             margin: const EdgeInsets.only(right: 10),
                             width: wordSize,
                             alignment: Alignment.center,
@@ -138,58 +151,106 @@ class _GamePlayViewState extends State<GamePlayView> {
                         ),
                       ),
                     ),
-                    const VSpace(8),
+                    const VSpace(16),
 
-                    // Alphabets
-                    Wrap(
-                      alignment: WrapAlignment.center,
+                    // Alphabet
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        ...alphabets.map((e) {
-                          return Stack(
-                            alignment: Alignment.center,
-                            children: [
-                              InkWell(
-                                onTap: () {
-                                  if (!gBloc.correctAlphabets.contains(e) && !gBloc.wrongAlphabets.contains(e)) {
-                                    //characterClick(e.toLowerCase());
-                                    context.read<GamePlayBloc>().add(CharacterClick(e.toLowerCase()));
-                                  }
-                                },
-                                child: Container(
-                                  // decoration: BoxDecoration(border: Border.all()),
-                                  width: boxSize,
-                                  height: boxSize,
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    e,
-                                    style: Theme.of(context).textTheme.headlineMedium,
-                                  ),
-                                ),
+                        ...alphabetsLine1.map((e) {
+                          return InkWell(
+                            onTap: () {
+                              if (!gBloc.correctAlphabets.contains(e.toLowerCase()) && !gBloc.wrongAlphabets.contains(e.toLowerCase())) {
+                                context.read<GamePlayBloc>().add(CharacterClick(e.toLowerCase()));
+                              }
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: gBloc.correctAlphabets.contains(e.toLowerCase())
+                                    ? Colors.green
+                                    : gBloc.wrongAlphabets.contains(e.toLowerCase())
+                                        ? Colors.red
+                                        : Colors.grey,
                               ),
-                              if (gBloc.correctAlphabets.contains(e.toLowerCase()))
-                                Padding(
-                                  padding: const EdgeInsets.all(2),
-                                  child: Icon(
-                                    Icons.check,
-                                    color: Colors.green,
-                                    size: boxSize - 10,
-                                  ),
-                                ),
-                              if (gBloc.wrongAlphabets.contains(e.toLowerCase()))
-                                Padding(
-                                  padding: const EdgeInsets.all(2),
-                                  child: Icon(
-                                    Icons.highlight_remove,
-                                    color: Colors.red,
-                                    size: boxSize - 10,
-                                  ),
-                                ),
-                            ],
+                              margin: const EdgeInsets.all(2),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              width: boxSize,
+                              alignment: Alignment.center,
+                              child: Text(
+                                e,
+                                style: Theme.of(context).textTheme.headlineSmall?.semiBold.textColor(Colors.white),
+                              ),
+                            ),
                           );
                         }).toList(),
                       ],
                     ),
-                    const VSpace(32),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ...alphabetsLine2.map((e) {
+                          return InkWell(
+                            onTap: () {
+                              if (!gBloc.correctAlphabets.contains(e.toLowerCase()) && !gBloc.wrongAlphabets.contains(e.toLowerCase())) {
+                                context.read<GamePlayBloc>().add(CharacterClick(e.toLowerCase()));
+                              }
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: gBloc.correctAlphabets.contains(e.toLowerCase())
+                                    ? Colors.green
+                                    : gBloc.wrongAlphabets.contains(e.toLowerCase())
+                                        ? Colors.red
+                                        : Colors.grey,
+                              ),
+                              margin: const EdgeInsets.all(2),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              width: boxSize,
+                              alignment: Alignment.center,
+                              child: Text(
+                                e,
+                                style: Theme.of(context).textTheme.headlineSmall?.semiBold.textColor(Colors.white),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ...alphabetsLine3.map((e) {
+                          return InkWell(
+                            onTap: () {
+                              if (!gBloc.correctAlphabets.contains(e.toLowerCase()) && !gBloc.wrongAlphabets.contains(e.toLowerCase())) {
+                                context.read<GamePlayBloc>().add(CharacterClick(e.toLowerCase()));
+                              }
+                            },
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(4),
+                                color: gBloc.correctAlphabets.contains(e.toLowerCase())
+                                    ? Colors.green
+                                    : gBloc.wrongAlphabets.contains(e.toLowerCase())
+                                        ? Colors.red
+                                        : Colors.grey,
+                              ),
+                              margin: const EdgeInsets.all(2),
+                              padding: const EdgeInsets.symmetric(vertical: 8),
+                              width: boxSize,
+                              alignment: Alignment.center,
+                              child: Text(
+                                e,
+                                style: Theme.of(context).textTheme.headlineSmall?.semiBold.textColor(Colors.white),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ],
+                    ),
+                    const VSpace(16),
                   ],
                 ),
 
@@ -211,101 +272,113 @@ class _GamePlayViewState extends State<GamePlayView> {
     );
   }
 
-  void showNoDataDialog(BuildContext context, String message) {
-    showDialog(
-      barrierDismissible: false,
-      context: context,
-      builder: (_) {
-        return WillPopScope(
-          onWillPop: () async => false,
-          child: Dialog(
-            child: Padding(
-              padding: const EdgeInsets.all(16),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    message,
-                    style: Theme.of(context).textTheme.bodyLarge,
-                    textAlign: TextAlign.center,
-                  ),
-                  const SizedBox(height: 8),
-                  TextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                      Navigator.pop(context);
-                    },
-                    child: const Text('Close'),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
-  void showFailedDialog(BuildContext context) {
+  void showFailedAlertDialog(BuildContext context) {
     showDialog<void>(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext _) {
           return WillPopScope(
             onWillPop: () async => false,
-            child: Dialog(
-              child: Column(
+            child: AlertDialog.adaptive(
+              title: const Text("You Lost :("),
+              content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Lottie.asset(LottieAssets.sad, height: 200),
+                  Lottie.asset(LottieAssets.sad, height: 150),
                   Text(
-                    "OOPS... You Failed!",
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    "It's okay to loose, would you like to try again",
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  const VSpace(16),
-                  FilledButton(
-                    onPressed: () {
-                      context.read<GamePlayBloc>().add(Retry());
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Retry"),
-                  ),
-                  const VSpace(16),
                 ],
               ),
+              actions: [
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Try Again'),
+                  onPressed: () {
+                    context.read<GamePlayBloc>().add(Retry());
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
             ),
           );
         });
   }
 
-  void showWinnerDialog(BuildContext context) {
+  void showWinnerAlertDialog(BuildContext context) {
     showDialog<void>(
         context: context,
         barrierDismissible: false,
         builder: (BuildContext _) {
           return WillPopScope(
             onWillPop: () async => false,
-            child: Dialog(
-              child: Column(
+            child: AlertDialog.adaptive(
+              title: const Text("You Win :)"),
+              content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Lottie.asset(LottieAssets.win, height: 300),
+                  Lottie.asset(LottieAssets.win, height: 200),
                   Text(
-                    "You Win",
-                    style: Theme.of(context).textTheme.headlineSmall,
+                    "You have guss the correct word, would you like to play next game?",
+                    style: Theme.of(context).textTheme.bodyLarge,
                   ),
-                  const VSpace(16),
-                  FilledButton(
-                    onPressed: () {
-                      context.read<GamePlayBloc>().add(NextGame());
-                      Navigator.pop(context);
-                    },
-                    child: const Text("Next"),
-                  ),
-                  const VSpace(16),
                 ],
               ),
+              actions: [
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                ),
+                TextButton(
+                  child: const Text('Play Next'),
+                  onPressed: () {
+                    context.read<GamePlayBloc>().add(NextGame());
+                    Navigator.pop(context);
+                  },
+                ),
+              ],
+            ),
+          );
+        });
+  }
+
+  void showNoDataAlertDialog(BuildContext context, String message) {
+    showDialog<void>(
+        context: context,
+        barrierDismissible: false,
+        builder: (BuildContext _) {
+          return WillPopScope(
+            onWillPop: () async => false,
+            child: AlertDialog.adaptive(
+              title: const Text("Alert"),
+              content: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(
+                    message,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                  ),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  child: const Text('Cancel'),
+                  onPressed: () {
+                    Navigator.of(context).pop();
+                    Navigator.of(context).pop();
+                  },
+                ),
+              ],
             ),
           );
         });
@@ -317,7 +390,10 @@ class _GamePlayViewState extends State<GamePlayView> {
         child: SizedBox(
           width: 200,
           height: 200,
-          child: Image.asset(path, color: Colors.black),
+          child: Image.asset(
+            path,
+            color: Theme.of(context).colorScheme.onBackground,
+          ),
         ));
   }
 }
