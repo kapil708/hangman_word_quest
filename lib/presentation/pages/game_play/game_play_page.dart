@@ -42,7 +42,7 @@ class _GamePlayViewState extends State<GamePlayView> {
       body: BlocConsumer<GamePlayBloc, GamePlayState>(
         listener: (context, state) {
           if (state is STWordFailed) {
-            Navigator.pop(context);
+            showNoDataDialog(context, state.message);
           } else if (state is STAttemptOver) {
             showFailedDialog(context);
           } else if (state is STWinner) {
@@ -208,6 +208,42 @@ class _GamePlayViewState extends State<GamePlayView> {
           );
         },
       ),
+    );
+  }
+
+  void showNoDataDialog(BuildContext context, String message) {
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (_) {
+        return WillPopScope(
+          onWillPop: () async => false,
+          child: Dialog(
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    message,
+                    style: Theme.of(context).textTheme.bodyLarge,
+                    textAlign: TextAlign.center,
+                  ),
+                  const SizedBox(height: 8),
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pop(context);
+                    },
+                    child: const Text('Close'),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        );
+      },
     );
   }
 

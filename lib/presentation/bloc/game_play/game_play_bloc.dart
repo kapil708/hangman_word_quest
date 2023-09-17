@@ -34,6 +34,7 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
     final response = await wordUseCase.getWordByType(categoryId: categoryId);
 
     response.fold((failure) {
+      print("failure: ${failure.statusCode}");
       emit(STWordFailed(failure.message));
     }, (data) {
       word = data;
@@ -47,10 +48,9 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
       int matchCount = event.character.allMatches(word.name.toLowerCase()).length;
       correctAlphabets.addAll(List.filled(matchCount, event.character));
 
-      print("matchCount: $matchCount");
-      //print("matchCount: $matchCount");
-
       if (word.name.length == correctAlphabets.length) {
+        int score = 6 - attempt;
+        await wordUseCase.updatePlayedWord(wordId: word.id, score: score);
         emit(STWinner());
       } else {
         emit(STCorrectAlphabets(correctAlphabets));
@@ -78,7 +78,7 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
   onNextGame(NextGame event, Emitter<GamePlayState> emit) async {
     emit(STWordLoading());
 
-    final response = await wordUseCase.getWordByType(categoryId: categoryId, wordId: word.id);
+    final response = await wordUseCase.getWordByType(categoryId: categoryId);
 
     response.fold((failure) {
       emit(STWordFailed(failure.message));

@@ -29,11 +29,25 @@ class WordRepositoryImpl implements WordRepository {
   }
 
   @override
-  Future<Either<RemoteFailure, WordEntity>> getWordByType({required String categoryId, String? wordId}) async {
+  Future<Either<RemoteFailure, WordEntity>> getWordByType({required String categoryId}) async {
     if (await networkInfo.isConnected) {
       try {
-        final word = await remoteDataSource.getWordByType(categoryId: categoryId, wordId: wordId);
+        final word = await remoteDataSource.getWordByType(categoryId: categoryId);
         return Right(word);
+      } on RemoteException catch (e) {
+        return Left(RemoteFailure(statusCode: e.statusCode, message: e.message));
+      }
+    } else {
+      return const Left(RemoteFailure(statusCode: 12163, message: 'No internet connection'));
+    }
+  }
+
+  @override
+  Future<Either<RemoteFailure, bool>> updatePlayedWord({required String wordId, required int score}) async {
+    if (await networkInfo.isConnected) {
+      try {
+        final val = await remoteDataSource.updatePlayedWord(wordId: wordId, score: score);
+        return Right(val);
       } on RemoteException catch (e) {
         return Left(RemoteFailure(statusCode: e.statusCode, message: e.message));
       }

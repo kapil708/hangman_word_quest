@@ -144,21 +144,30 @@ class SettingsView extends StatelessWidget {
                                     child: ClipOval(
                                       child: Image.network(
                                         settingsCubit.userEntity?.image ?? '',
-                                        width: 48,
-                                        height: 48,
+                                        width: 60,
+                                        height: 60,
                                       ),
                                     ),
                                   ),
-                                Text(
-                                  settingsCubit.userEntity?.name ?? '',
-                                  style: Theme.of(context).textTheme.titleLarge,
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      settingsCubit.userEntity?.name ?? '',
+                                      style: Theme.of(context).textTheme.titleLarge,
+                                    ),
+                                    Text(
+                                      "Level: ${settingsCubit.userEntity?.level ?? '0'}",
+                                      style: Theme.of(context).textTheme.bodyLarge,
+                                    ),
+                                  ],
                                 ),
                               ],
                             )
                           : const SizedBox();
                 },
               ),
-              const VSpace(16),
+              const VSpace(32),
 
               Text(l10n.language, style: Theme.of(context).textTheme.titleMedium),
               //const SizedBox(height: 8),

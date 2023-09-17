@@ -5,9 +5,17 @@ part 'user_model.g.dart';
 
 @JsonSerializable()
 class UserModel extends UserEntity {
-  const UserModel({required super.id, super.name, super.image, required super.isAnonymous});
+  const UserModel({
+    required super.id,
+    super.name,
+    super.image,
+    required super.isAnonymous,
+    super.level,
+    super.score,
+  });
 
   factory UserModel.fromJson(Map<String, dynamic> json) => _$UserModelFromJson(json);
 
+  @override
   Map<String, dynamic> toJson() => _$UserModelToJson(this);
 }

@@ -22,7 +22,8 @@ abstract class RemoteDataSource {
   Future<UserModel> googleAnonymousLogin();
   Future<UserModel> googleLogin();
   Future<List<CategoryModel>> getCategoryList();
-  Future<WordModel> getWordByType({required String categoryId, String? wordId});
+  Future<WordModel> getWordByType({required String categoryId});
+  Future<bool> updatePlayedWord({required String wordId, required int score});
   Future<List<WordModel>> getWordListByType(String categoryId);
 }
 
@@ -53,7 +54,17 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<UserModel> googleAnonymousLogin() async {
     try {
       final userCredential = await FirebaseAuth.instance.signInAnonymously();
-      return UserModel(id: userCredential.user?.uid ?? '1', isAnonymous: userCredential.user?.isAnonymous ?? true);
+
+      UserModel userModel = UserModel(
+        id: userCredential.user?.uid ?? '1',
+        isAnonymous: userCredential.user?.isAnonymous ?? true,
+        level: 0,
+        score: 0,
+      );
+
+      await _db.collection('user').doc(userModel.id).set(userModel.toJson());
+
+      return userModel;
     } on FirebaseAuthException catch (e) {
       return Future.error(RemoteException(statusCode: 422, message: e.message ?? e.code));
     }
@@ -77,12 +88,22 @@ class RemoteDataSourceImpl implements RemoteDataSource {
       // Link user
       final userCredential = await FirebaseAuth.instance.currentUser?.linkWithCredential(credential);
 
-      return UserModel(
+      // get user data
+      var userData = locator.get<LocalDataSource>().getUser();
+
+      UserModel userModel = UserModel(
         id: userCredential?.user?.uid ?? '1',
         isAnonymous: userCredential?.user?.isAnonymous ?? true,
         name: userCredential?.user?.displayName ?? userCredential?.user?.providerData.first.displayName,
         image: userCredential?.user?.photoURL ?? userCredential?.user?.providerData.first.photoURL,
+        level: userData['level'],
+        score: userData['score'],
       );
+
+      // Update user data
+      await _db.collection('user').doc(userModel.id).update(userModel.toJson());
+
+      return userModel;
     } on FirebaseAuthException catch (e) {
       return Future.error(RemoteException(statusCode: 422, message: e.message ?? e.code));
     }
@@ -97,15 +118,9 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<WordModel> getWordByType({required String categoryId, String? wordId}) async {
+  Future<WordModel> getWordByType({required String categoryId}) async {
     // get user data
     var userData = locator.get<LocalDataSource>().getUser();
-
-    // check if wordId then save it to db
-    if (wordId != null) {
-      var data = {'user_id': userData['id'], 'word_id': wordId};
-      await _db.collection('word_played').add(data);
-    }
 
     // get played words base on user id
     final wordPlayedSnapshot = await _db.collection('word_played').where('user_id', isEqualTo: userData['id']).get();
@@ -125,11 +140,39 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     if (word.docs.isNotEmpty) {
       return word.docs.map((e) => WordModel.fromJson(e.data())).first;
     } else {
-      return Future.error(RemoteException(statusCode: 422, message: 'No data found'));
+      return Future.error(RemoteException(statusCode: 12133, message: 'You have played all the words in this category'));
     }
 
     // List selectedWordList = wordList.where((word) => word['category_id'] == categoryId).toList();
     // return selectedWordList.map((category) => WordModel.fromJson(category)).first;
+  }
+
+  @override
+  Future<bool> updatePlayedWord({required String wordId, required int score}) async {
+    // get user data
+    var userData = locator.get<LocalDataSource>().getUser();
+
+    var data = {'user_id': userData['id'], 'word_id': wordId};
+    await _db.collection('word_played').add(data);
+
+    // Update user data
+    int userLevel = int.parse((userData['level'] ?? '0').toString());
+    int userScore = int.parse((userData['score'] ?? '0').toString());
+
+    var newLevel = ++userLevel;
+    var newScore = userScore + score;
+
+    await _db.collection('user').doc(userData['id']).update({
+      'level': newLevel,
+      'score': newScore,
+    });
+
+    // Update local data
+    userData['level'] = newLevel;
+    userData['score'] = newScore;
+    locator.get<LocalDataSource>().cacheUser(userData);
+
+    return true;
   }
 
   @override
