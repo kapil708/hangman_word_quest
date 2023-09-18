@@ -3,10 +3,12 @@ import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:hangman_word_quest/core/const/avatar_list.dart';
 import 'package:http/http.dart' as http;
 
 import '../../core/const/word_list.dart';
 import '../../core/error/exceptions.dart';
+import '../../core/services/helper.dart';
 import '../../injection_container.dart';
 import '../models/category/category_model.dart';
 import '../models/login/login_model.dart';
@@ -21,6 +23,7 @@ abstract class RemoteDataSource {
   Future<LoginModel> login(Map<String, dynamic> body);
   Future<UserModel> googleAnonymousLogin();
   Future<UserModel> googleLogin();
+  Future<UserModel> googleSignIn();
   Future<List<CategoryModel>> getCategoryList();
   Future<WordModel> getWordByType({required String categoryId});
   Future<Map<String, dynamic>> updatePlayedWord({required String wordId, required int score});
@@ -55,9 +58,14 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     try {
       final userCredential = await FirebaseAuth.instance.signInAnonymously();
 
+      String name = getRandomString(10);
+      String image = getRandomElement(avatarList);
+
       UserModel userModel = UserModel(
         id: userCredential.user?.uid ?? '1',
-        isAnonymous: userCredential.user?.isAnonymous ?? true,
+        isAnonymous: true,
+        name: name,
+        image: image,
         level: 0,
         score: 0,
       );
@@ -102,6 +110,39 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
       // Update user data
       await _db.collection('user').doc(userModel.id).update(userModel.toJson());
+
+      return userModel;
+    } on FirebaseAuthException catch (e) {
+      return Future.error(RemoteException(statusCode: 422, message: e.message ?? e.code));
+    }
+  }
+
+  @override
+  Future<UserModel> googleSignIn() async {
+    try {
+      // Trigger the authentication flow
+      final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+
+      // Obtain the auth details from the request
+      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+
+      // Create a new credential
+      final credential = GoogleAuthProvider.credential(accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
+
+      // Once signed in, return the UserCredential
+      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+
+      UserModel userModel = UserModel(
+        id: userCredential.user?.uid ?? '1',
+        isAnonymous: false,
+        name: userCredential.user?.displayName ?? userCredential.user?.providerData.first.displayName,
+        image: userCredential.user?.photoURL ?? userCredential.user?.providerData.first.photoURL,
+        level: 0,
+        score: 0,
+      );
+
+      // Update user data
+      await _db.collection('user').doc(userModel.id).set(userModel.toJson());
 
       return userModel;
     } on FirebaseAuthException catch (e) {

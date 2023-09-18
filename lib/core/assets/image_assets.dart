@@ -8,6 +8,8 @@ class ImageAssets {
   static const String hmLeftLag = 'assets/images/ll.png';
   static const String google = 'assets/images/google.png';
   static const String facebook = 'assets/images/facebook.png';
+  static const String spy = 'assets/images/spy.png';
+  static const String hangmanLogin = 'assets/images/hangman_login.png';
   // flags
   static const String hindi = 'assets/images/india.png';
   static const String english = 'assets/images/us.png';

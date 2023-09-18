@@ -73,8 +73,41 @@ class SettingsView extends StatelessWidget {
                 },
                 builder: (context, state) {
                   SettingsCubit settingsCubit = context.read<SettingsCubit>();
-                  return (settingsCubit.userEntity == null || settingsCubit.userEntity?.isAnonymous == true)
-                      ? Column(
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          if (settingsCubit.userEntity?.image != null)
+                            Padding(
+                              padding: const EdgeInsets.only(right: 16),
+                              child: ClipOval(
+                                child: Image.network(
+                                  settingsCubit.userEntity?.image ?? '',
+                                  width: 60,
+                                  height: 60,
+                                ),
+                              ),
+                            ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                settingsCubit.userEntity?.name ?? '',
+                                style: Theme.of(context).textTheme.titleLarge,
+                              ),
+                              Text(
+                                "Level: ${settingsCubit.userEntity?.level ?? '0'} | "
+                                "Score: ${settingsCubit.userEntity?.score ?? '0'}",
+                                style: Theme.of(context).textTheme.bodyLarge,
+                              ),
+                            ],
+                          ),
+                        ],
+                      ),
+                      const VSpace(16),
+                      if (settingsCubit.userEntity?.isAnonymous == true)
+                        Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
@@ -84,11 +117,9 @@ class SettingsView extends StatelessWidget {
                             const VSpace(16),
                             InkWell(
                               onTap: () => context.read<SettingsCubit>().googleSignIn(),
-                              //onTap: () => signInWithGoogle(),
                               child: Container(
                                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                                 decoration: BoxDecoration(
-                                  // color: const Color(0xFFDE5241).withOpacity(0.2),
                                   color: Colors.red.shade50,
                                   borderRadius: BorderRadius.circular(8),
                                 ),
@@ -109,69 +140,15 @@ class SettingsView extends StatelessWidget {
                                 ),
                               ),
                             ),
-                            const VSpace(16),
-                            Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                              decoration: BoxDecoration(
-                                color: Colors.blue.shade50,
-                                //color: const Color(0xFF3D58AD).withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(8),
-                              ),
-                              child: Row(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                children: [
-                                  Image.asset(
-                                    ImageAssets.facebook,
-                                    height: 24,
-                                    width: 24,
-                                  ),
-                                  const HSpace(4),
-                                  Text(
-                                    "Join with Facebook",
-                                    style: Theme.of(context).textTheme.titleMedium?.textColor(const Color(0xFF3D58AD)),
-                                  ),
-                                ],
-                              ),
-                            ),
                           ],
-                        )
-                      : (settingsCubit.userEntity != null || settingsCubit.userEntity?.isAnonymous == false)
-                          ? Row(
-                              children: [
-                                if (settingsCubit.userEntity?.image != null)
-                                  Padding(
-                                    padding: const EdgeInsets.only(right: 16),
-                                    child: ClipOval(
-                                      child: Image.network(
-                                        settingsCubit.userEntity?.image ?? '',
-                                        width: 60,
-                                        height: 60,
-                                      ),
-                                    ),
-                                  ),
-                                Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      settingsCubit.userEntity?.name ?? '',
-                                      style: Theme.of(context).textTheme.titleLarge,
-                                    ),
-                                    Text(
-                                      "Level: ${settingsCubit.userEntity?.level ?? '0'} | "
-                                      "Score: ${settingsCubit.userEntity?.score ?? '0'}",
-                                      style: Theme.of(context).textTheme.bodyLarge,
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            )
-                          : const SizedBox();
+                        ),
+                    ],
+                  );
                 },
               ),
               const VSpace(32),
 
               Text(l10n.language, style: Theme.of(context).textTheme.titleMedium),
-              //const SizedBox(height: 8),
               BlocBuilder<AppBloc, AppState>(
                 builder: (context, state) {
                   return ListTile(

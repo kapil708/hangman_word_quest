@@ -15,7 +15,7 @@ import 'domain/use_cases/login_user_case.dart';
 import 'domain/use_cases/word_user_case.dart';
 import 'presentation/bloc/category/category_bloc.dart';
 import 'presentation/bloc/game_play/game_play_bloc.dart';
-import 'presentation/bloc/login/login_bloc.dart';
+import 'presentation/bloc/login/login_cubit.dart';
 import 'presentation/bloc/splash/splash_bloc.dart';
 
 final GetIt locator = GetIt.instance;
@@ -23,7 +23,7 @@ final GetIt locator = GetIt.instance;
 Future<void> setUp() async {
   // Features
   locator.registerFactory(() => SplashBloc(loginUseCase: locator(), localDataSource: locator()));
-  locator.registerFactory(() => LoginBloc(loginUseCase: locator(), localDataSource: locator()));
+  locator.registerFactory(() => LoginCubit(loginUseCase: locator(), localDataSource: locator()));
   locator.registerFactory(() => SettingsCubit(loginUseCase: locator(), localDataSource: locator()));
   locator.registerFactory(() => CategoryBloc(wordUseCase: locator()));
   locator.registerFactory(() => GamePlayBloc(wordUseCase: locator()));

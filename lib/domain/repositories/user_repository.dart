@@ -8,4 +8,5 @@ abstract class UserRepository {
   Future<Either<RemoteFailure, LoginEntity>> login(Map<String, dynamic> body);
   Future<Either<RemoteFailure, UserEntity>> googleAnonymousLogin();
   Future<Either<RemoteFailure, UserEntity>> googleLogin();
+  Future<Either<RemoteFailure, UserEntity>> googleSignIn();
 }

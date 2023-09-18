@@ -55,4 +55,18 @@ class UserRepositoryImpl implements UserRepository {
       return const Left(RemoteFailure(statusCode: 12163, message: 'No internet connection'));
     }
   }
+
+  @override
+  Future<Either<RemoteFailure, UserEntity>> googleSignIn() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final login = await remoteDataSource.googleSignIn();
+        return Right(login);
+      } on RemoteException catch (e) {
+        return Left(RemoteFailure(statusCode: e.statusCode, message: e.message));
+      }
+    } else {
+      return const Left(RemoteFailure(statusCode: 12163, message: 'No internet connection'));
+    }
+  }
 }

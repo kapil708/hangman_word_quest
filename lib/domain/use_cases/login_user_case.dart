@@ -21,4 +21,8 @@ class LoginUseCase {
   Future<Either<RemoteFailure, UserEntity>> googleLogin() async {
     return userRepository.googleLogin();
   }
+
+  Future<Either<RemoteFailure, UserEntity>> googleSignIn() async {
+    return userRepository.googleSignIn();
+  }
 }

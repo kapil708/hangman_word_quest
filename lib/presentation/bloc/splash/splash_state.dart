@@ -8,12 +8,12 @@ class STInitial extends SplashState {
   List<Object?> get props => [];
 }
 
-class STLoginSuccess extends SplashState {
+class STLogin extends SplashState {
   @override
   List<Object?> get props => [];
 }
 
-class STLoginFailed extends SplashState {
+class STHome extends SplashState {
   @override
   List<Object?> get props => [];
 }

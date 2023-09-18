@@ -28,6 +28,11 @@ class AppRouter {
         builder: (context, state) => const SplashPage(),
       ),
       GoRoute(
+        path: '/login',
+        name: RouteName.login,
+        builder: (context, state) => const LoginPage(),
+      ),
+      GoRoute(
         path: '/home',
         name: RouteName.home,
         builder: (context, state) => const HomePage(),

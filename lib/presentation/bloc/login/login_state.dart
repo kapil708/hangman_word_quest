@@ -1,37 +1,23 @@
-part of 'login_bloc.dart';
+part of 'login_cubit.dart';
 
 @immutable
 abstract class LoginState extends Equatable {}
 
-class LoginStateInitial extends LoginState {
+class LoginInitial extends LoginState {
   @override
   List<Object?> get props => [];
 }
 
-class LoginStateLoading extends LoginState {
-  @override
-  List<Object?> get props => [];
-}
+class STLoginFailed extends LoginState {
+  final String message;
 
-class LoginStateFailed extends LoginState {
-  final String? message;
-
-  LoginStateFailed(this.message);
+  STLoginFailed(this.message);
 
   @override
   List<Object?> get props => [message];
 }
 
-class LoginStateException extends LoginState {
-  final String? message;
-
-  LoginStateException(this.message);
-
-  @override
-  List<Object?> get props => [message];
-}
-
-class LoginStateSuccess extends LoginState {
+class STLoginSuccess extends LoginState {
   @override
   List<Object?> get props => [];
 }

@@ -25,10 +25,10 @@ class SplashView extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocListener<SplashBloc, SplashState>(
       listener: (context, state) {
-        if (state is STLoginSuccess) {
+        if (state is STHome) {
           context.goNamed(RouteName.home);
-        } else if (state is STLoginFailed) {
-          print("Login failed");
+        } else {
+          context.goNamed(RouteName.login);
         }
       },
       child: Scaffold(
@@ -40,7 +40,6 @@ class SplashView extends StatelessWidget {
             children: [
               Text(
                 "Hangman Word Quest",
-                //"Hangman Word Quest",
                 style: Theme.of(context).textTheme.headlineLarge,
                 textAlign: TextAlign.center,
               ),
