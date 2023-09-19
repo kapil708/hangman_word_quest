@@ -18,6 +18,7 @@ class SplashBloc extends Bloc<SplashEvent, SplashState> {
 
   onInit(Init event, Emitter<SplashState> emit) async {
     // get user data
+    await Future.delayed(const Duration(seconds: 2));
     var userData = localDataSource.getUser();
     if (userData == null) {
       emit(STLogin());

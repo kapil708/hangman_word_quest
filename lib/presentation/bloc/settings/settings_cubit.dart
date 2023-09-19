@@ -25,7 +25,7 @@ class SettingsCubit extends Cubit<SettingsState> {
   }
 
   void googleSignIn() async {
-    final response = await loginUseCase.googleLogin();
+    final response = await loginUseCase.linkGoogleAccount();
     response.fold(
       (failure) {
         emit(STLoginFailed(failure.message));

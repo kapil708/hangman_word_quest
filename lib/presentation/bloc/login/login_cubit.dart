@@ -17,28 +17,38 @@ class LoginCubit extends Cubit<LoginState> {
   }) : super(LoginInitial());
 
   void anonymousLogin() async {
-    final response = await loginUseCase.googleAnonymousLogin();
-    response.fold(
-      (failure) {
-        emit(STLoginFailed(failure.message));
-      },
-      (data) {
-        localDataSource.cacheUser(data.toJson());
-        emit(STLoginSuccess());
-      },
-    );
+    try {
+      emit(STLoading());
+      final response = await loginUseCase.googleAnonymousLogin();
+      response.fold(
+        (failure) {
+          emit(STLoginFailed(failure.message));
+        },
+        (data) {
+          localDataSource.cacheUser(data.toJson());
+          emit(STLoginSuccess());
+        },
+      );
+    } on Exception catch (e) {
+      emit(STLoginFailed(e.toString()));
+    }
   }
 
   void googleSignIn() async {
-    final response = await loginUseCase.googleSignIn();
-    response.fold(
-      (failure) {
-        emit(STLoginFailed(failure.message));
-      },
-      (data) {
-        localDataSource.cacheUser(data.toJson());
-        emit(STLoginSuccess());
-      },
-    );
+    try {
+      emit(STLoading());
+      final response = await loginUseCase.googleLogin();
+      response.fold(
+        (failure) {
+          emit(STLoginFailed(failure.message));
+        },
+        (data) {
+          localDataSource.cacheUser(data.toJson());
+          emit(STLoginSuccess());
+        },
+      );
+    } on Exception catch (e) {
+      emit(STLoginFailed(e.toString()));
+    }
   }
 }

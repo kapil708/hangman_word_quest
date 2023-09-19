@@ -8,6 +8,11 @@ class LoginInitial extends LoginState {
   List<Object?> get props => [];
 }
 
+class STLoading extends LoginState {
+  @override
+  List<Object?> get props => [];
+}
+
 class STLoginFailed extends LoginState {
   final String message;
 

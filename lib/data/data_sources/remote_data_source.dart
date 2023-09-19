@@ -22,8 +22,8 @@ Map<String, String>? get _headers => {'Accept': 'application/json', 'Content-Typ
 abstract class RemoteDataSource {
   Future<LoginModel> login(Map<String, dynamic> body);
   Future<UserModel> googleAnonymousLogin();
+  Future<UserModel> linkGoogleAccount();
   Future<UserModel> googleLogin();
-  Future<UserModel> googleSignIn();
   Future<List<CategoryModel>> getCategoryList();
   Future<WordModel> getWordByType({required String categoryId});
   Future<Map<String, dynamic>> updatePlayedWord({required String wordId, required int score});
@@ -79,7 +79,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<UserModel> googleLogin() async {
+  Future<UserModel> linkGoogleAccount() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -118,33 +118,36 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   }
 
   @override
-  Future<UserModel> googleSignIn() async {
+  Future<UserModel> googleLogin() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
+      if (googleUser != null) {
+        // Obtain the auth details from the request
+        final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
 
-      // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+        // Create a new credential
+        final credential = GoogleAuthProvider.credential(accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
 
-      // Create a new credential
-      final credential = GoogleAuthProvider.credential(accessToken: googleAuth?.accessToken, idToken: googleAuth?.idToken);
+        // Once signed in, return the UserCredential
+        final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
 
-      // Once signed in, return the UserCredential
-      final userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+        UserModel userModel = UserModel(
+          id: userCredential.user?.uid ?? '1',
+          isAnonymous: false,
+          name: userCredential.user?.displayName ?? userCredential.user?.providerData.first.displayName,
+          image: userCredential.user?.photoURL ?? userCredential.user?.providerData.first.photoURL,
+          level: 0,
+          score: 0,
+        );
 
-      UserModel userModel = UserModel(
-        id: userCredential.user?.uid ?? '1',
-        isAnonymous: false,
-        name: userCredential.user?.displayName ?? userCredential.user?.providerData.first.displayName,
-        image: userCredential.user?.photoURL ?? userCredential.user?.providerData.first.photoURL,
-        level: 0,
-        score: 0,
-      );
+        // Update user data
+        await _db.collection('user').doc(userModel.id).set(userModel.toJson());
 
-      // Update user data
-      await _db.collection('user').doc(userModel.id).set(userModel.toJson());
-
-      return userModel;
+        return userModel;
+      } else {
+        return Future.error(RemoteException(statusCode: 422, message: 'User return from google without login.'));
+      }
     } on FirebaseAuthException catch (e) {
       return Future.error(RemoteException(statusCode: 422, message: e.message ?? e.code));
     }
@@ -152,9 +155,12 @@ class RemoteDataSourceImpl implements RemoteDataSource {
 
   @override
   Future<List<CategoryModel>> getCategoryList() async {
-    //return categoryList.map((category) => CategoryModel.fromJson(category)).toList();
     final snapshot = await _db.collection('category').get();
-    final userData = snapshot.docs.map((e) => CategoryModel.fromJson(e.data())).toList();
+    final userData = snapshot.docs.map((e) {
+      var data = e.data();
+      data['id'] = e.id;
+      return CategoryModel.fromJson(data);
+    }).toList();
     return userData;
   }
 
@@ -179,7 +185,11 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     }
 
     if (word.docs.isNotEmpty) {
-      return word.docs.map((e) => WordModel.fromJson(e.data())).first;
+      return word.docs.map((e) {
+        var data = e.data();
+        data['id'] = e.id;
+        return WordModel.fromJson(data);
+      }).first;
     } else {
       return Future.error(RemoteException(statusCode: 12133, message: 'You have played all the words in this category'));
     }

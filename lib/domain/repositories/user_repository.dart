@@ -7,6 +7,6 @@ import '../entities/user_entity.dart';
 abstract class UserRepository {
   Future<Either<RemoteFailure, LoginEntity>> login(Map<String, dynamic> body);
   Future<Either<RemoteFailure, UserEntity>> googleAnonymousLogin();
+  Future<Either<RemoteFailure, UserEntity>> linkGoogleAccount();
   Future<Either<RemoteFailure, UserEntity>> googleLogin();
-  Future<Either<RemoteFailure, UserEntity>> googleSignIn();
 }

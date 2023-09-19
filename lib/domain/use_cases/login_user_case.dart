@@ -18,11 +18,11 @@ class LoginUseCase {
     return userRepository.googleAnonymousLogin();
   }
 
-  Future<Either<RemoteFailure, UserEntity>> googleLogin() async {
-    return userRepository.googleLogin();
+  Future<Either<RemoteFailure, UserEntity>> linkGoogleAccount() async {
+    return userRepository.linkGoogleAccount();
   }
 
-  Future<Either<RemoteFailure, UserEntity>> googleSignIn() async {
-    return userRepository.googleSignIn();
+  Future<Either<RemoteFailure, UserEntity>> googleLogin() async {
+    return userRepository.googleLogin();
   }
 }

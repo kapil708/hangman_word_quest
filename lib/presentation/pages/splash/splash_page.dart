@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:go_router/go_router.dart';
+import 'package:hangman_word_quest/core/assets/image_assets.dart';
 
 import '../../../core/route/route_names.dart';
 import '../../../injection_container.dart';
@@ -38,15 +39,9 @@ class SplashView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.center,
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Text(
-                "Hangman Word Quest",
-                style: Theme.of(context).textTheme.headlineLarge,
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                "Embark on a Word Quest and Defeat the Gallows!",
-                style: Theme.of(context).textTheme.labelLarge,
-                textAlign: TextAlign.center,
+              Image.asset(
+                ImageAssets.hangmanLogin,
+                width: MediaQuery.sizeOf(context).width * 0.9,
               ),
             ],
           ),

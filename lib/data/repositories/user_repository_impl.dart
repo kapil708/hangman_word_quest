@@ -43,10 +43,10 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<RemoteFailure, UserEntity>> googleLogin() async {
+  Future<Either<RemoteFailure, UserEntity>> linkGoogleAccount() async {
     if (await networkInfo.isConnected) {
       try {
-        final login = await remoteDataSource.googleLogin();
+        final login = await remoteDataSource.linkGoogleAccount();
         return Right(login);
       } on RemoteException catch (e) {
         return Left(RemoteFailure(statusCode: e.statusCode, message: e.message));
@@ -57,10 +57,10 @@ class UserRepositoryImpl implements UserRepository {
   }
 
   @override
-  Future<Either<RemoteFailure, UserEntity>> googleSignIn() async {
+  Future<Either<RemoteFailure, UserEntity>> googleLogin() async {
     if (await networkInfo.isConnected) {
       try {
-        final login = await remoteDataSource.googleSignIn();
+        final login = await remoteDataSource.googleLogin();
         return Right(login);
       } on RemoteException catch (e) {
         return Left(RemoteFailure(statusCode: e.statusCode, message: e.message));
