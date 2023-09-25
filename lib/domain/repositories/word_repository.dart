@@ -9,4 +9,5 @@ abstract class WordRepository {
   Future<Either<RemoteFailure, WordEntity>> getWordByType({required String categoryId});
   Future<Either<RemoteFailure, Map<String, dynamic>>> updatePlayedWord({required String wordId, required int score});
   Future<Either<RemoteFailure, List<WordEntity>>> getWordListByType(String categoryId);
+  Future<Either<RemoteFailure, bool>> linkWordIds();
 }

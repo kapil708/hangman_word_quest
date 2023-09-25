@@ -23,5 +23,16 @@ class CategoryBloc extends Bloc<CategoryEvent, CategoryState> {
         emit(CategoryLoaded(data));
       });
     });
+
+    on<LinkWordIds>((event, emit) async {
+      print("LinkWordIds : Start");
+      final wordResponse = await wordUseCase.linkWordIds();
+
+      wordResponse.fold((failure) {
+        print("LinkWordIds : ${failure.message}");
+      }, (data) {
+        print("LinkWordIds : $data");
+      });
+    });
   }
 }

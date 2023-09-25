@@ -7,3 +7,8 @@ class CategoryLoading extends CategoryEvent {
   @override
   List<Object?> get props => [];
 }
+
+class LinkWordIds extends CategoryEvent {
+  @override
+  List<Object?> get props => [];
+}

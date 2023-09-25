@@ -25,4 +25,8 @@ class WordUseCase {
   Future<Either<RemoteFailure, List<WordEntity>>> getWordListByType(String categoryId) async {
     return wordRepository.getWordListByType(categoryId);
   }
+
+  Future<Either<RemoteFailure, bool>> linkWordIds() async {
+    return wordRepository.linkWordIds();
+  }
 }

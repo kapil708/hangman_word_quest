@@ -28,6 +28,7 @@ abstract class RemoteDataSource {
   Future<WordModel> getWordByType({required String categoryId});
   Future<Map<String, dynamic>> updatePlayedWord({required String wordId, required int score});
   Future<List<WordModel>> getWordListByType(String categoryId);
+  Future<bool> linkWordIds();
 }
 
 class RemoteDataSourceImpl implements RemoteDataSource {
@@ -175,27 +176,21 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     // get words id from array
     final playedWords = wordPlayedSnapshot.docs.map((e) => e['word_id']).toList();
 
-    // get word from db which is pending to play
-    final QuerySnapshot<Map<String, dynamic>> word;
+    // Fetch all documents in the 'word' collection with the 'categoryId'
+    final QuerySnapshot<Map<String, dynamic>> wordSnapshot = await _db.collection('word').where('category_id', isEqualTo: categoryId).get();
 
-    if (playedWords.isNotEmpty) {
-      word = await _db.collection('word').where('category_id', isEqualTo: categoryId).where('id', whereNotIn: playedWords).limit(1).get();
-    } else {
-      word = await _db.collection('word').where('category_id', isEqualTo: categoryId).limit(1).get();
-    }
+    // Filter out documents that are in the 'playedWords' list
+    final List<Map<String, dynamic>> filteredWords = wordSnapshot.docs.where((doc) => !playedWords.contains(doc['id'])).map((doc) => doc.data()).toList();
 
-    if (word.docs.isNotEmpty) {
-      return word.docs.map((e) {
-        var data = e.data();
-        data['id'] = e.id;
-        return WordModel.fromJson(data);
-      }).first;
+    // Process the results as needed
+    final List<WordModel> wordModels = filteredWords.map((data) => WordModel.fromJson(data)).toList();
+
+    // Return the first result (or handle the results as needed)
+    if (wordModels.isNotEmpty) {
+      return wordModels.first;
     } else {
       return Future.error(RemoteException(statusCode: 12133, message: 'You have played all the words in this category'));
     }
-
-    // List selectedWordList = wordList.where((word) => word['category_id'] == categoryId).toList();
-    // return selectedWordList.map((category) => WordModel.fromJson(category)).first;
   }
 
   @override
@@ -230,6 +225,22 @@ class RemoteDataSourceImpl implements RemoteDataSource {
   Future<List<WordModel>> getWordListByType(String categoryId) async {
     List selectedWordList = wordList.where((word) => word['category_id'] == categoryId).toList();
     return selectedWordList.map((category) => WordModel.fromJson(category)).toList();
+  }
+
+  @override
+  Future<bool> linkWordIds() async {
+    try {
+      var snapshot = await _db.collection('word').get();
+
+      for (int i = 0; i < snapshot.docs.length; i++) {
+        var id = snapshot.docs[i].id;
+        await _db.collection('word').doc(id).update({'id': id});
+      }
+
+      return true;
+    } on Exception catch (e) {
+      return Future.error(RemoteException(statusCode: 422, message: e.toString()));
+    }
   }
 }
 

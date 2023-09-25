@@ -35,7 +35,6 @@ class _GamePlayViewState extends State<GamePlayView> {
   @override
   Widget build(BuildContext context) {
     double boxSize = (MediaQuery.sizeOf(context).width - 40) / 10;
-    double wordSize = (MediaQuery.sizeOf(context).width - 32) / 10;
 
     return Scaffold(
       appBar: AppBar(toolbarHeight: 0),
@@ -54,6 +53,13 @@ class _GamePlayViewState extends State<GamePlayView> {
         },
         builder: (context, state) {
           GamePlayBloc gBloc = context.read<GamePlayBloc>();
+          int wordLength = gBloc.word.name.characters.length;
+          double totalSpace = 10 * (wordLength - 1);
+          double wordSize = (MediaQuery.sizeOf(context).width - 16 - totalSpace) / wordLength;
+          //double wordSize = (MediaQuery.sizeOf(context).width - 32) / gBloc.word.name.characters.length;
+
+          print("wordSize: $wordSize");
+          print("word length: ${gBloc.word.name.characters.length}");
 
           return Padding(
             padding: const EdgeInsets.symmetric(vertical: 16),

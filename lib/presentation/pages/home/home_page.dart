@@ -32,7 +32,12 @@ class HomeView extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text(l10n.home),
+        title: InkWell(
+          onTap: () {
+            context.read<CategoryBloc>().add(LinkWordIds());
+          },
+          child: Text(l10n.home),
+        ),
         actions: [
           IconButton(
             onPressed: () => context.goNamed(RouteName.settings),

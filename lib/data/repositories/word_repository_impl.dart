@@ -69,4 +69,18 @@ class WordRepositoryImpl implements WordRepository {
       return const Left(RemoteFailure(statusCode: 12163, message: 'No internet connection'));
     }
   }
+
+  @override
+  Future<Either<RemoteFailure, bool>> linkWordIds() async {
+    if (await networkInfo.isConnected) {
+      try {
+        final wordList = await remoteDataSource.linkWordIds();
+        return Right(wordList);
+      } on RemoteException catch (e) {
+        return Left(RemoteFailure(statusCode: e.statusCode, message: e.message));
+      }
+    } else {
+      return const Left(RemoteFailure(statusCode: 12163, message: 'No internet connection'));
+    }
+  }
 }
