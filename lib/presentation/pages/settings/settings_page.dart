@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:share_plus/share_plus.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/assets/image_assets.dart';
 import '../../../core/enums/app_theme_mode.dart';
@@ -148,6 +150,48 @@ class SettingsView extends StatelessWidget {
               ),
               const VSpace(32),
 
+              // Support Us
+              Text("Support Us", style: Theme.of(context).textTheme.bodyLarge),
+              const VSpace(24),
+              InkWell(
+                onTap: () {
+                  final Uri url = Uri.parse('https://flutter.dev');
+                  launchUrl(url, mode: LaunchMode.externalApplication);
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Rate 5-Starts", style: Theme.of(context).textTheme.titleMedium),
+                      const Icon(Icons.arrow_forward_ios),
+                    ],
+                  ),
+                ),
+              ),
+              InkWell(
+                onTap: () {
+                  Share.share(
+                    'Check out this amazing game https://example.com',
+                    subject: 'Hangman Word Quest',
+                  );
+                },
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text("Share Hangman", style: Theme.of(context).textTheme.titleMedium),
+                      const Icon(Icons.arrow_forward_ios),
+                    ],
+                  ),
+                ),
+              ),
+              const VSpace(16),
+
+              Text("Settings", style: Theme.of(context).textTheme.bodyLarge),
+              const VSpace(16),
+              // Language
               Text(l10n.language, style: Theme.of(context).textTheme.titleMedium),
               BlocBuilder<AppBloc, AppState>(
                 builder: (context, state) {
@@ -159,7 +203,9 @@ class SettingsView extends StatelessWidget {
                   );
                 },
               ),
-              const VSpace(24),
+              const VSpace(12),
+
+              // Theme
               Text(l10n.theme, style: Theme.of(context).textTheme.titleMedium),
               const VSpace(16),
               BlocBuilder<AppBloc, AppState>(

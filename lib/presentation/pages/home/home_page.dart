@@ -28,7 +28,7 @@ class HomeView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = AppLocalizations.of(context)!;
-    final double cardWidth = (MediaQuery.sizeOf(context).width / 2) - 10;
+    final double cardWidth = (MediaQuery.sizeOf(context).width / 2);
 
     return Scaffold(
       appBar: AppBar(
@@ -36,7 +36,8 @@ class HomeView extends StatelessWidget {
           onTap: () {
             context.read<CategoryBloc>().add(LinkWordIds());
           },
-          child: Text(l10n.home),
+          child: const Text("Hangman"),
+          //child: Text(l10n.home),
         ),
         actions: [
           IconButton(
@@ -87,6 +88,8 @@ class HomeView extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               const VSpace(8),
+
+              // Banner
               Image.network(
                 "https://images.squarespace-cdn.com/content/v1/520eab84e4b02d5660581bbb/1560907169107-RQNT2337VK26WH9ZAUPS/matt-anderson-duckduckgo-hero-banner-illustration-space-spread.png?format=2500w",
                 height: 150,
@@ -94,6 +97,8 @@ class HomeView extends StatelessWidget {
                 fit: BoxFit.cover,
               ),
               const VSpace(16),
+
+              // Categories
               Text(
                 "Categories",
                 style: Theme.of(context).textTheme.titleLarge,
@@ -121,27 +126,29 @@ class HomeView extends StatelessWidget {
                                   'categoryName': category.name,
                                 },
                               ),
-                              child: Stack(
-                                alignment: Alignment.bottomCenter,
-                                children: [
-                                  ClipRRect(
-                                    borderRadius: BorderRadius.circular(12),
-                                    child: Image.network(
+                              child: ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Stack(
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                    Image.network(
                                       category.image,
+                                      height: cardWidth,
+                                      width: cardWidth,
                                       fit: BoxFit.cover,
                                     ),
-                                  ),
-                                  Container(
-                                    padding: const EdgeInsets.all(8),
-                                    color: Colors.black26,
-                                    width: MediaQuery.sizeOf(context).width,
-                                    child: Text(
-                                      category.name,
-                                      style: Theme.of(context).textTheme.titleLarge?.semiBold.textColor(Colors.white),
-                                      textAlign: TextAlign.center,
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      color: Colors.black26,
+                                      width: MediaQuery.sizeOf(context).width,
+                                      child: Text(
+                                        category.name,
+                                        style: Theme.of(context).textTheme.titleLarge?.semiBold.textColor(Colors.white),
+                                        textAlign: TextAlign.center,
+                                      ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               ),
                             );
                           },
@@ -153,6 +160,8 @@ class HomeView extends StatelessWidget {
                               : const Text("Category init");
                 },
               ),
+
+              const VSpace(32),
             ],
           ),
         ),
