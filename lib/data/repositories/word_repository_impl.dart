@@ -43,10 +43,10 @@ class WordRepositoryImpl implements WordRepository {
   }
 
   @override
-  Future<Either<RemoteFailure, Map<String, dynamic>>> updatePlayedWord({required String wordId, required int score}) async {
+  Future<Either<RemoteFailure, Map<String, dynamic>>> updatePlayedWord({required String wordId, required String categoryId, required int score}) async {
     if (await networkInfo.isConnected) {
       try {
-        final val = await remoteDataSource.updatePlayedWord(wordId: wordId, score: score);
+        final val = await remoteDataSource.updatePlayedWord(wordId: wordId, categoryId: categoryId, score: score);
         return Right(val);
       } on RemoteException catch (e) {
         return Left(RemoteFailure(statusCode: e.statusCode, message: e.message));

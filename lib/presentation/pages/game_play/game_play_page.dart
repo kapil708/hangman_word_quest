@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:hangman_word_quest/core/extensions/text_style_extensions.dart';
 import 'package:lottie/lottie.dart';
 
@@ -35,6 +36,7 @@ class _GamePlayViewState extends State<GamePlayView> {
   @override
   Widget build(BuildContext context) {
     double boxSize = (MediaQuery.sizeOf(context).width - 40) / 10;
+    final l10n = AppLocalizations.of(context)!;
 
     return Scaffold(
       appBar: AppBar(toolbarHeight: 0),
@@ -80,13 +82,13 @@ class _GamePlayViewState extends State<GamePlayView> {
                           ),
                         ),
                         Text(
-                          "Score ${gBloc.userScore}",
+                          "${l10n.score} ${gBloc.userScore}",
                           style: Theme.of(context).textTheme.titleLarge,
                         ),
                         Padding(
                           padding: const EdgeInsets.only(right: 16),
                           child: Text(
-                            "Level ${gBloc.userLevel}",
+                            "${l10n.level} ${gBloc.userLevel}",
                             style: Theme.of(context).textTheme.titleLarge,
                           ),
                         ),
@@ -279,6 +281,7 @@ class _GamePlayViewState extends State<GamePlayView> {
   }
 
   void showFailedAlertDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -286,27 +289,27 @@ class _GamePlayViewState extends State<GamePlayView> {
           return WillPopScope(
             onWillPop: () async => false,
             child: AlertDialog.adaptive(
-              title: const Text("You Lost :("),
+              title: Text(l10n.youLost),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Lottie.asset(LottieAssets.sad, height: 150),
                   Text(
-                    "It's okay to loose, would you like to try again",
+                    l10n.youLostMessage,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
               ),
               actions: [
                 TextButton(
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancel),
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: const Text('Try Again'),
+                  child: Text(l10n.tryAgain),
                   onPressed: () {
                     context.read<GamePlayBloc>().add(Retry());
                     Navigator.pop(context);
@@ -319,6 +322,7 @@ class _GamePlayViewState extends State<GamePlayView> {
   }
 
   void showWinnerAlertDialog(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
     showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -326,27 +330,27 @@ class _GamePlayViewState extends State<GamePlayView> {
           return WillPopScope(
             onWillPop: () async => false,
             child: AlertDialog.adaptive(
-              title: const Text("You Win :)"),
+              title: Text(l10n.youWin),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Lottie.asset(LottieAssets.win, height: 200),
                   Text(
-                    "You have guss the correct word, would you like to play next game?",
+                    l10n.youWinMessage,
                     style: Theme.of(context).textTheme.bodyLarge,
                   ),
                 ],
               ),
               actions: [
                 TextButton(
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancel),
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();
                   },
                 ),
                 TextButton(
-                  child: const Text('Play Next'),
+                  child: Text(l10n.playNext),
                   onPressed: () {
                     context.read<GamePlayBloc>().add(NextGame());
                     Navigator.pop(context);
@@ -359,6 +363,8 @@ class _GamePlayViewState extends State<GamePlayView> {
   }
 
   void showNoDataAlertDialog(BuildContext context, String message) {
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -366,7 +372,7 @@ class _GamePlayViewState extends State<GamePlayView> {
           return WillPopScope(
             onWillPop: () async => false,
             child: AlertDialog.adaptive(
-              title: const Text("Alert"),
+              title: Text(l10n.alert),
               content: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
@@ -378,7 +384,7 @@ class _GamePlayViewState extends State<GamePlayView> {
               ),
               actions: [
                 TextButton(
-                  child: const Text('Cancel'),
+                  child: Text(l10n.cancel),
                   onPressed: () {
                     Navigator.of(context).pop();
                     Navigator.of(context).pop();

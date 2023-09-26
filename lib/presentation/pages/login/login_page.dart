@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:go_router/go_router.dart';
 
 import '../../../core/assets/image_assets.dart';
@@ -26,6 +27,8 @@ class LoginView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = AppLocalizations.of(context)!;
+
     return Scaffold(
       appBar: AppBar(toolbarHeight: 0),
       body: BlocConsumer<LoginCubit, LoginState>(
@@ -52,18 +55,6 @@ class LoginView extends StatelessWidget {
                         ImageAssets.hangmanLogin,
                         width: MediaQuery.sizeOf(context).width * 0.8,
                       ),
-                      /*const VSpace(64),
-                      Text(
-                        "Hello!",
-                        style: Theme.of(context).textTheme.headlineLarge?.bold,
-                        textAlign: TextAlign.center,
-                      ),
-                      const VSpace(8),
-                      Text(
-                        "Welcome to Hangman Word Quest",
-                        style: Theme.of(context).textTheme.bodyLarge,
-                        textAlign: TextAlign.center,
-                      ),*/
                       const Spacer(),
                       InkWell(
                         onTap: () => context.read<LoginCubit>().googleSignIn(),
@@ -83,7 +74,7 @@ class LoginView extends StatelessWidget {
                               ),
                               const HSpace(8),
                               Text(
-                                "Join with Google",
+                                l10n.joinWithGoogle,
                                 style: Theme.of(context).textTheme.titleMedium?.textColor(const Color(0xFFDE5241)),
                               ),
                             ],
@@ -109,7 +100,7 @@ class LoginView extends StatelessWidget {
                               ),
                               const HSpace(8),
                               Text(
-                                "Join as Guest",
+                                l10n.joinAsGuest,
                                 style: Theme.of(context).textTheme.titleMedium,
                               ),
                             ],
@@ -139,6 +130,8 @@ class LoginView extends StatelessWidget {
   }
 
   void showErrorAlertDialog(BuildContext context, String message) {
+    final l10n = AppLocalizations.of(context)!;
+
     showDialog<void>(
         context: context,
         barrierDismissible: false,
@@ -146,14 +139,14 @@ class LoginView extends StatelessWidget {
           return WillPopScope(
             onWillPop: () async => false,
             child: AlertDialog.adaptive(
-              title: const Text("Login failed"),
+              title: Text(l10n.loginFailed),
               content: Text(
                 message,
                 style: Theme.of(context).textTheme.bodyLarge,
               ),
               actions: [
                 TextButton(
-                  child: const Text('Retry'),
+                  child: Text(l10n.retry),
                   onPressed: () => Navigator.pop(context),
                 ),
               ],

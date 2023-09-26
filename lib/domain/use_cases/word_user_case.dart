@@ -18,8 +18,8 @@ class WordUseCase {
     return wordRepository.getWordByType(categoryId: categoryId);
   }
 
-  Future<Either<RemoteFailure, Map<String, dynamic>>> updatePlayedWord({required String wordId, required int score}) async {
-    return wordRepository.updatePlayedWord(wordId: wordId, score: score);
+  Future<Either<RemoteFailure, Map<String, dynamic>>> updatePlayedWord({required String wordId, required String categoryId, required int score}) async {
+    return wordRepository.updatePlayedWord(wordId: wordId, categoryId: categoryId, score: score);
   }
 
   Future<Either<RemoteFailure, List<WordEntity>>> getWordListByType(String categoryId) async {

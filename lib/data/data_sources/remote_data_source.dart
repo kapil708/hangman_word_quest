@@ -26,7 +26,7 @@ abstract class RemoteDataSource {
   Future<UserModel> googleLogin();
   Future<List<CategoryModel>> getCategoryList();
   Future<WordModel> getWordByType({required String categoryId});
-  Future<Map<String, dynamic>> updatePlayedWord({required String wordId, required int score});
+  Future<Map<String, dynamic>> updatePlayedWord({required String wordId, required String categoryId, required int score});
   Future<List<WordModel>> getWordListByType(String categoryId);
   Future<bool> linkWordIds();
 }
@@ -171,7 +171,7 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     var userData = locator.get<LocalDataSource>().getUser();
 
     // get played words base on user id
-    final wordPlayedSnapshot = await _db.collection('word_played').where('user_id', isEqualTo: userData['id']).get();
+    final wordPlayedSnapshot = await _db.collection('word_played').where('category_id', isEqualTo: categoryId).where('user_id', isEqualTo: userData['id']).get();
 
     // get words id from array
     final playedWords = wordPlayedSnapshot.docs.map((e) => e['word_id']).toList();
@@ -189,16 +189,23 @@ class RemoteDataSourceImpl implements RemoteDataSource {
     if (wordModels.isNotEmpty) {
       return wordModels.first;
     } else {
-      return Future.error(RemoteException(statusCode: 12133, message: 'You have played all the words in this category'));
+      return Future.error(RemoteException(
+        statusCode: 12133,
+        message: playedWords.isNotEmpty ? 'You have played all the words in this category' : 'This category do not have any words to play',
+      ));
     }
   }
 
   @override
-  Future<Map<String, dynamic>> updatePlayedWord({required String wordId, required int score}) async {
+  Future<Map<String, dynamic>> updatePlayedWord({required String wordId, required String categoryId, required int score}) async {
     // get user data
     var userData = locator.get<LocalDataSource>().getUser();
 
-    var data = {'user_id': userData['id'], 'word_id': wordId};
+    var data = {
+      'user_id': userData['id'],
+      'word_id': wordId,
+      'category_id': categoryId,
+    };
     await _db.collection('word_played').add(data);
 
     // Update user data

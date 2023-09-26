@@ -100,7 +100,7 @@ class HomeView extends StatelessWidget {
 
               // Categories
               Text(
-                "Categories",
+                l10n.categories,
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const VSpace(16),

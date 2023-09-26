@@ -99,8 +99,8 @@ class SettingsView extends StatelessWidget {
                                 style: Theme.of(context).textTheme.titleLarge,
                               ),
                               Text(
-                                "Level: ${settingsCubit.userEntity?.level ?? '0'} | "
-                                "Score: ${settingsCubit.userEntity?.score ?? '0'}",
+                                "${l10n.level}: ${settingsCubit.userEntity?.level ?? '0'} | "
+                                "${l10n.score}: ${settingsCubit.userEntity?.score ?? '0'}",
                                 style: Theme.of(context).textTheme.bodyLarge,
                               ),
                             ],
@@ -113,7 +113,7 @@ class SettingsView extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Text(
-                              "Join HangMan with your favorite social media account",
+                              l10n.joinHangManWithYourSocialMediaAccount,
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                             const VSpace(16),
@@ -135,7 +135,7 @@ class SettingsView extends StatelessWidget {
                                     ),
                                     const HSpace(8),
                                     Text(
-                                      "Join with Google",
+                                      l10n.joinWithGoogle,
                                       style: Theme.of(context).textTheme.titleMedium?.textColor(const Color(0xFFDE5241)),
                                     ),
                                   ],
@@ -151,7 +151,10 @@ class SettingsView extends StatelessWidget {
               const VSpace(32),
 
               // Support Us
-              Text("Support Us", style: Theme.of(context).textTheme.bodyLarge),
+              Text(
+                l10n.supportUs,
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
               const VSpace(24),
               InkWell(
                 onTap: () {
@@ -163,7 +166,10 @@ class SettingsView extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Rate 5-Starts", style: Theme.of(context).textTheme.titleMedium),
+                      Text(
+                        l10n.rate5Starts,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                       const Icon(Icons.arrow_forward_ios),
                     ],
                   ),
@@ -181,7 +187,10 @@ class SettingsView extends StatelessWidget {
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      Text("Share Hangman", style: Theme.of(context).textTheme.titleMedium),
+                      Text(
+                        l10n.shareHangman,
+                        style: Theme.of(context).textTheme.titleMedium,
+                      ),
                       const Icon(Icons.arrow_forward_ios),
                     ],
                   ),
@@ -189,7 +198,7 @@ class SettingsView extends StatelessWidget {
               ),
               const VSpace(16),
 
-              Text("Settings", style: Theme.of(context).textTheme.bodyLarge),
+              Text(l10n.settings, style: Theme.of(context).textTheme.bodyLarge),
               const VSpace(16),
               // Language
               Text(l10n.language, style: Theme.of(context).textTheme.titleMedium),
