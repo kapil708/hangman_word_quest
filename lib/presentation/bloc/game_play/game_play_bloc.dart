@@ -60,6 +60,7 @@ class GamePlayBloc extends Bloc<GamePlayEvent, GamePlayState> {
       correctAlphabets.addAll(List.filled(matchCount, event.character));
 
       if (word.name.length == correctAlphabets.length) {
+        emit(STWordLoading());
         int score = 6 - attempt;
         var response = await wordUseCase.updatePlayedWord(wordId: word.id, categoryId: categoryId, score: score);
         response.fold(

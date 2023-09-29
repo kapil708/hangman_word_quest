@@ -4,6 +4,7 @@
   "loginFailed": "Login failed",
   "retry": "Retry",
   "categories": "Categories",
+  "categoriesMessage": "Select any topic to start the game",
   "home": "Home",
   "settings": "Settings",
   "level": "Level",

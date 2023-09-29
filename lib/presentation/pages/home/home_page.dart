@@ -9,6 +9,7 @@ import '../../../core/route/route_names.dart';
 import '../../../domain/entities/category_entity.dart';
 import '../../../injection_container.dart';
 import '../../bloc/category/category_bloc.dart';
+import '../../widgets/shimmer/shimmer.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -36,7 +37,7 @@ class HomeView extends StatelessWidget {
           onTap: () {
             context.read<CategoryBloc>().add(LinkWordIds());
           },
-          child: const Text("Hangman"),
+          child: Text(l10n.categories),
           //child: Text(l10n.home),
         ),
         actions: [
@@ -87,21 +88,27 @@ class HomeView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const VSpace(8),
+              //const VSpace(8),
 
               // Banner
-              Image.network(
+              /*Image.network(
                 "https://images.squarespace-cdn.com/content/v1/520eab84e4b02d5660581bbb/1560907169107-RQNT2337VK26WH9ZAUPS/matt-anderson-duckduckgo-hero-banner-illustration-space-spread.png?format=2500w",
                 height: 150,
                 width: MediaQuery.sizeOf(context).width,
                 fit: BoxFit.cover,
               ),
-              const VSpace(16),
+              const VSpace(16),*/
 
               // Categories
-              Text(
+              /*Text(
                 l10n.categories,
                 style: Theme.of(context).textTheme.titleLarge,
+              ),
+              const VSpace(16),*/
+
+              Text(
+                l10n.categoriesMessage,
+                style: Theme.of(context).textTheme.bodyLarge,
               ),
               const VSpace(16),
               BlocBuilder<CategoryBloc, CategoryState>(
@@ -157,7 +164,7 @@ class HomeView extends StatelessWidget {
                           ? Text(state.message)
                           : state is CategoryLoading
                               ? const CircularProgressIndicator()
-                              : const Text("Category init");
+                              : const Shimmer(type: ShimmerType.category);
                 },
               ),
 

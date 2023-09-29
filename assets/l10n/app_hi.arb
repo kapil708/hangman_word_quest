@@ -4,6 +4,7 @@
   "loginFailed": "लॉगिन विफल",
   "retry": "पुन: प्रयास करें",
   "categories": "श्रेणियाँ",
+  "categoriesMessage": "गेम शुरू करने के लिए कोई भी विषय चुनें",
   "home": "होम",
   "settings": "सेटिंग्स",
   "level": "स्तर",

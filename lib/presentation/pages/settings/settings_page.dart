@@ -5,6 +5,7 @@ import 'package:share_plus/share_plus.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../../../core/assets/image_assets.dart';
+import '../../../core/const/constants.dart';
 import '../../../core/enums/app_theme_mode.dart';
 import '../../../core/enums/language.dart';
 import '../../../core/extensions/spacing.dart';
@@ -158,7 +159,7 @@ class SettingsView extends StatelessWidget {
               const VSpace(24),
               InkWell(
                 onTap: () {
-                  final Uri url = Uri.parse('https://flutter.dev');
+                  final Uri url = Uri.parse(googlePlayURL);
                   launchUrl(url, mode: LaunchMode.externalApplication);
                 },
                 child: Padding(
@@ -178,7 +179,7 @@ class SettingsView extends StatelessWidget {
               InkWell(
                 onTap: () {
                   Share.share(
-                    'Check out this amazing game https://example.com',
+                    'Check out this amazing game hangman word quest. $googlePlayURL',
                     subject: 'Hangman Word Quest',
                   );
                 },
