@@ -101,7 +101,7 @@ class LoginView extends StatelessWidget {
                               const HSpace(8),
                               Text(
                                 l10n.joinAsGuest,
-                                style: Theme.of(context).textTheme.titleMedium,
+                                style: Theme.of(context).textTheme.titleMedium?.textColor(Colors.black),
                               ),
                             ],
                           ),
